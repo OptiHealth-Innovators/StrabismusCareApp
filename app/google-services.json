@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "716115746780",
+    "project_id": "strabismuscare",
+    "storage_bucket": "strabismuscare.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:716115746780:android:22fad216fed4197d403919",
+        "android_client_info": {
+          "package_name": "com.anonymous.StrabismusCare"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "716115746780-9mo58icc3e8ka64ham6e510cnohakbk0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.anonymous.StrabismusCare",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "716115746780-i24q1hh8mvh0pj0ljaprpt080jhfnusm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMH8FwU7JgcXcxc94RM0w63fcvG5g0ESs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "716115746780-i24q1hh8mvh0pj0ljaprpt080jhfnusm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "716115746780-29kqrv0sdbonqfakd1tumchpc2evm2ik.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.strabismuscare"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
