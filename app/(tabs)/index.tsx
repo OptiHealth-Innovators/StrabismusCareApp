@@ -13,13 +13,13 @@ import {
 import TestsComponent from "@/components/Testes";
 
 const handleBookAppointment = () => {
-  alert("Book Appointment");
+  alert("Appointment Booked");
 };
 
 const Dashboard: React.FC = () => {
   return (
     <View className="flex-1 bg-[#2E004F]">
-      <ScrollView className="">
+      <ScrollView className="pt-4">
         {/* Header Section */}
         <View className="p-4 pt-8">
           {/* User Greeting */}
@@ -60,9 +60,9 @@ const Dashboard: React.FC = () => {
 
           {/* Top Doctors Section */}
           <View className="flex-row justify-between items-center mb-4 mt-2">
-            <Text className="text-lg font-bold text-[#333333]">Top Doctors</Text>
+            <Text className="text-lg  font-bold text-[#333333]">Top Doctors</Text>
             <TouchableOpacity>
-              <Text className="text-[#6200EE] text-sm pr-2">See All</Text>
+              <Text className="text-[#FF7900] font-[16] pr-6">See All</Text>
             </TouchableOpacity>
           </View>
           <ScrollView

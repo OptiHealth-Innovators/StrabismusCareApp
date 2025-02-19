@@ -6,7 +6,7 @@ import ProfileSettings from "@/components/profileSettings";
 
 const MenuScreen: React.FC = ({navigation }: any) => {
   return (
-    <View className="flex-1 bg-white">
+    <View className="flex-1 bg-white pt-8">
       {/* Header Section */}
       <View className="items-center mt-8">
         <Image

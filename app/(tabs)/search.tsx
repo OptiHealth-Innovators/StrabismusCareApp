@@ -11,11 +11,11 @@ import DoctorCard from "@/components/DoctorCard";
 
 const SearchBarWithBadge = () => {
   const handleBookAppointment = () => {
-    alert("Book Appointment");
+    alert("Appointment Booked");
   };
 
   return (
-    <View className="p-6">
+    <View className="p-6 pt-12">
       <View className="flex-row items-center justify-between bg-white border border-gray-300 rounded-lg p-2">
         {/* Search Input */}
         <View className="flex-row items-center flex-1">

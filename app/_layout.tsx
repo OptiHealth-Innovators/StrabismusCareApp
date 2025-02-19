@@ -1,32 +1,58 @@
-import React, { useEffect } from 'react';
-// import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-// import * as SplashScreen from 'expo-splash-screen';
-// import { StatusBar } from 'expo-status-bar';
+import React, { useEffect, useState } from "react";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import * as Font from "expo-font";
 import "../global.css";
+import { StatusBar } from "expo-status-bar";
+import { CustomSplashScreen } from "@/components/CustomSplashScreen";
 
 export default function RootLayout() {
-  // const [loaded] = useFonts({
-  //   SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  // });
+  const [loaded, setLoaded] = useState(false);
 
-  // useEffect(() => {
-  //   if (loaded) {
-  //     SplashScreen.hideAsync();
-  //   }
-  // }, [loaded]);
+  useEffect(() => {
+    // Prevent the splash screen from auto-hiding
+    SplashScreen.preventAutoHideAsync();
 
-  // if (!loaded) {
-  //   return null;
-  // }
+    const loadResources = async () => {
+      try {
+        // Load custom fonts
+        await Font.loadAsync({
+          "Manrope-SemiBold": require("../assets/fonts/Manrope-SemiBold.ttf"),
+          "Manrope-Regular": require("../assets/fonts/Manrope-Regular.ttf"),
+          "Manrope-Medium": require("../assets/fonts/Manrope-Medium.ttf"),
+        });
+
+        // Simulate some additional loading time (e.g., fetching data)
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        // Mark as loaded
+        setLoaded(true);
+      } catch (error) {
+        console.error("Error loading resources:", error);
+      }
+    };
+
+    loadResources();
+  }, []);
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return <CustomSplashScreen />;
+  }
 
   return (
     <>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
-      {/* <StatusBar style="auto" /> */}
+      <StatusBar style="auto" />
     </>
   );
 }

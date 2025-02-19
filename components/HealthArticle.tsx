@@ -82,8 +82,8 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   seeAll: {
-      color: "blue",
-      paddingRight: -16,
+      color: "#FF7900",
+      paddingRight: 8,
   },
   horizontalScroll: {
       paddingHorizontal: 16,
