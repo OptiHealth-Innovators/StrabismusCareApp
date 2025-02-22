@@ -143,7 +143,7 @@ const Calendar = () => {
   );
 
   return (
-    <View style={{ padding: 16 }}>
+    <View style={{ padding: 16, marginTop: 20 }}>
       <Text
         style={{
           fontSize: 18,
