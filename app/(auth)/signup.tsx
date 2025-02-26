@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Toast from 'react-native-toast-message';
 import {
   View,
   Text,
@@ -7,7 +8,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebase.config";
 import { router } from "expo-router";
 
@@ -15,13 +16,24 @@ const SignUp = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const signIn = async () => {
-    try {
-      const user = await signInWithEmailAndPassword(auth, email, password);
-      if (user) router.replace("/(tabs)");
-    } catch (error: any) {
-      console.log(error);
-      alert("Sign in failed: " + error.message);
+  const createAccount = async () => {
+    if (email && password) {
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        if (user) {
+          router.push('/(tabs)')
+        }
+      } catch (error) {
+        const r = (error as Error)
+        const m = r.message;
+        const errorMessage = m.replace(/^Firebase: /, '').replace(/ \(.+\)\.$/, '').trim();
+        console.log(errorMessage);
+        Toast.show({
+          type: 'error',
+          text1: errorMessage,
+        });
+      }
     }
   };
 
@@ -88,17 +100,19 @@ const SignUp = () => {
         {/* Button */}
         <TouchableOpacity
           className="bg-[#ff7900] py-3 items-center rounded mb-4"
-          onPress={signIn}
+          onPress={createAccount}
         >
           <Text className="text-sm text-white font-manrope-medium font-[500]">
             Create Account
           </Text>
         </TouchableOpacity>
 
-       {/* Already have an account */}
-       <Text className="text-sm text-[#525a66] text-center font-manrope-regular font-[400]">
+        {/* Already have an account */}
+        <Text className="text-sm text-[#525a66] text-center font-manrope-regular font-[400]">
           Already have an account?{' '}
-          <Text className="text-[#ff7900] font-[500]">Sign in</Text>
+          <TouchableOpacity onPress={() => router.push("/")}>
+            <Text className="text-[#ff7900] font-[500]">Sign in</Text>
+          </TouchableOpacity>
         </Text>
 
         {/* Divider */}
@@ -132,6 +146,7 @@ const SignUp = () => {
           </TouchableOpacity>
         </View>
       </View>
+      <Toast />
     </SafeAreaView>
   );
 };
