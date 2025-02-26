@@ -70,7 +70,7 @@ const Index = () => {
               onPress={() => setIsPasswordVisible(!isPasswordVisible)}
             >
               <Image
-                className="w-6 h-6 ml-2 absolute right-3"
+                className="w-6 h-6 ml-2 absolute bottom-3 right-3"
                 source={
                   isPasswordVisible
                     ? require("@/assets/images/eye.png")

@@ -2,14 +2,8 @@ import { MaterialIcons, FontAwesome, Feather } from "@expo/vector-icons";
 import DoctorCard from "@/components/DoctorCard";
 import HealthArticle from "@/components/HealthArticle";
 import React from "react";
-import Testes from "@/components/Testes"
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-} from "react-native";
+import Testes from "@/components/Testes";
+import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
 import TestsComponent from "@/components/Testes";
 
 const handleBookAppointment = () => {
@@ -18,25 +12,35 @@ const handleBookAppointment = () => {
 
 const Dashboard: React.FC = () => {
   return (
-    <View className="flex-1 bg-[#2E004F]">
+    <View className="flex-1 bg-[#2E004F] mb-10">
       <ScrollView className="pt-4">
         {/* Header Section */}
         <View className="p-4 pt-8">
           {/* User Greeting */}
-          <View className="flex-row items-center">
+          <View className="flex-row items-center pt-5">
             <Image
               source={require("@/assets/images/doc.png")}
               className="w-12 h-12 rounded-full mr-4"
             />
-            <View>
-              <Text className="text-[#B1A5A5] text-base">Hi, Welcome Back,</Text>
-              <Text className="text-white text-lg font-bold">John Doe William</Text>
+            <View className="flex-1">
+              <Text className="text-[#B1A5A5] text-base">
+                Hi, Welcome Back!
+              </Text>
+              <Text className="text-white text-lg font-bold">
+                John Doe William
+              </Text>
             </View>
+            <Image
+              source={require("@/assets/images/notification.png")}
+              className="absolute right-3 w-6 h-6"
+            />
           </View>
           <View className="flex-row bg-[#C4521A] p-5 rounded-lg items-center mt-5 mb-5">
             {/* Text Section */}
             <View className="flex-1 mr-7">
-              <Text className="text-2xl font-bold text-white mb-2">Medical Center</Text>
+              <Text className="text-2xl font-bold text-white mb-2">
+                Medical Center
+              </Text>
               <Text className="text-xs text-white leading-5">
                 Eyes are essential to how we experience the world. Proper eye
                 care is the foundation for preserving sight and ensuring a
@@ -52,15 +56,16 @@ const Dashboard: React.FC = () => {
         </View>
 
         {/* Main Content */}
-			  <View className="p-4 bg-white rounded-t-2xl">
-				  
-				  <View>
-					  <Testes/>
-</View>
+        <View className="p-4 bg-white rounded-t-2xl">
+          <View>
+            <Testes />
+          </View>
 
           {/* Top Doctors Section */}
           <View className="flex-row justify-between items-center mb-4 mt-2">
-            <Text className="text-lg  font-bold text-[#333333]">Top Doctors</Text>
+            <Text className="text-lg  font-bold text-[#333333]">
+              Top Doctors
+            </Text>
             <TouchableOpacity>
               <Text className="text-[#FF7900] font-[16] pr-6">See All</Text>
             </TouchableOpacity>
@@ -92,49 +97,41 @@ const Dashboard: React.FC = () => {
           <HealthArticle />
 
           <View className="p-4 bg-white">
-            <Text className="text-lg font-normal text-[#333333] mb-5 mt-4 -ml-4">
-              Book Appointments in <Text className="font-bold">3 easy steps</Text>
+            <Text className="text-lg font-bold text-[#333333] mb-5 mt-4 -ml-4">
+              Book Appointments in 3 easy steps
             </Text>
 
             {/* Step 1 */}
             <View className="flex-row items-center mb-3">
-              <View className="w-10 h-10 bg-[#FF6A0E] rounded-full justify-center items-center">
-                <Feather name="search" size={20} color="#FFFFFF" />
-              </View>
+              <Image
+                source={require("@/assets/images/search.png")}
+                className="w-10 h-10"
+              />
               <Text className="ml-3">
-                Search for doctors by{" "}
-                <Text className="font-bold">speciality</Text>,{" "}
-                <Text className="font-bold">service</Text> or{" "}
-                <Text className="font-bold">disease</Text>
+                Search for doctors by speciality, service or disease.
               </Text>
             </View>
 
             {/* Step 2 */}
             <View className="flex-row items-center mb-3">
-              <View className="w-10 h-10 bg-[#FF6A0E] rounded-full justify-center items-center">
-                <MaterialIcons
-                  name="bookmark-border"
-                  size={24}
-                  color="#FFFFFF"
-                />
-              </View>
+              <Image
+                source={require("@/assets/images/bookmark.png")}
+                className="w-10 h-10"
+              />
               <Text className="ml-3">
-                Book and <Text className="font-bold">confirm appointment</Text>{" "}
-                within seconds
+                Book and confirm appointment within seconds.
               </Text>
             </View>
 
             {/* Step 3 */}
             <View className="flex-row items-center">
-              <View className="w-10 h-10 bg-[#FF6A0E] rounded-full justify-center items-center">
-                <View className="w-8 h-8 bg-[#FF6A0E] rounded-full justify-center items-center">
-                  <Feather name="check" size={15} color="#FFFFFF" />
-                </View>
-              </View>
+              <Image
+                source={require("@/assets/images/check.png")}
+                className="w-10 h-10"
+              />
+
               <Text className="ml-3">
-                Select based on <Text className="font-bold">experience</Text>,{" "}
-                <Text className="font-bold">fee</Text> or{" "}
-                <Text className="font-bold">rating</Text>
+                Select based on experience, free or ratings.
               </Text>
             </View>
           </View>

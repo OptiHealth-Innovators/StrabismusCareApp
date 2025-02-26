@@ -39,7 +39,10 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
       {/* Appointment Details */}
                     <View style={styles.appointmentDetailsTop}>
                       <View style={styles.rowTop}>
-                        <Text style={styles.iconTop}>🕒</Text>
+                        <Image
+                          source={require("@/assets/images/timer.png")}
+                          style={{ width: 16, height: 16, marginRight: 8 }}
+                        />
                         <Text style={styles.dateTop}>Monday</Text>
                         <Text style={styles.dateTop}>Oct 27, 2022</Text>
                         <Text style={styles.timeTop}>9:00 - 9:30 am</Text>
@@ -48,7 +51,13 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
 
       {/* Book Appointment Button */}
       <TouchableOpacity style={styles.buttonTop} onPress={onPress}>
-        <Text style={styles.buttonTextTop}>Book Appointment</Text>
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Image
+        source={require("@/assets/images/calender.png")}
+        style={{ width: 24, height: 24, marginRight: 8 }}
+          />
+          <Text style={styles.buttonTextTop}>Book Appointment</Text>
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -131,7 +140,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttonTop: {
-    backgroundColor: "#FF6C00",
+    backgroundColor: "#FFFFFF",
     borderRadius: 8,
     paddingVertical: 12,
     alignItems: "center",
@@ -139,6 +148,6 @@ const styles = StyleSheet.create({
   buttonTextTop: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#FFFFFF",
+    color: "#FF6C00",
   },
 });

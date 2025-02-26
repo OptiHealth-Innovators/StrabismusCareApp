@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Image } from "react-native";
 
 interface TestCardProps {
   title: string;
@@ -57,10 +57,42 @@ const TestsComponent = () => {
           justifyContent: "space-between",
         }}
       >
-        <TestCard title="Strabismus" icon={<Text>👁️</Text>} />
-        <TestCard title="Color Blindness" icon={<Text>🎨</Text>} />
-        <TestCard title="Vision" icon={<Text>📋</Text>} />
-        <TestCard title="60 Amblyopia" icon={<Text>👁️</Text>} />
+        <TestCard
+          title="Strabismus"
+          icon={
+            <Image
+              source={require("@/assets/images/strabismus-icon.png")}
+              style={{ width: 20, height: 20, marginRight: 8 }}
+            />
+          }
+        />
+        <TestCard
+          title="Color Blindness"
+          icon={
+            <Image
+              source={require("@/assets/images/color-blind-icon.png")}
+              style={{ width: 20, height: 20, marginRight: 8 }}
+            />
+          }
+        />
+        <TestCard
+          title="Vision"
+          icon={
+            <Image
+              source={require("@/assets/images/vision-icon.png")}
+              style={{ width: 20, height: 20, marginRight: 8 }}
+            />
+          }
+        />
+        <TestCard
+          title="60 Amblyopia"
+          icon={
+            <Image
+              source={require("@/assets/images/amblyopia-icon.png")}
+              style={{ width: 20, height: 20, marginRight: 8 }}
+            />
+          }
+        />
       </View>
     </View>
   );

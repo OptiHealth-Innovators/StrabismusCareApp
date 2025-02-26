@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform } from "react-native";
+import { Platform, View } from "react-native"; // Import View
 import { Tabs } from "expo-router";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
@@ -7,24 +7,34 @@ import Feather from "react-native-vector-icons/Feather";
 export default function TabLayout() {
   return (
     <Tabs
-      screenOptions={{
+      screenOptions={({ route }) => ({ // Add route parameter
         headerShown: false,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: "absolute",
-          },
-          default: {
-            backgroundColor: "#2E004F",
-            height: 55,
-          },
-        }),
+        tabBarStyle: {
+          backgroundColor: "#2E004F", // Default background color (for Android and fallback)
+          height: 55,
+          position: "absolute", // Important for iOS to allow for dynamic background
+          borderTopWidth: 0, // Remove top border for cleaner look
+          bottom: 0,
+          left: 0,
+          right: 0,
+          elevation: 0,  // Remove shadow on Android
+        },
         tabBarLabelStyle: {
           color: "#FFFFFF", // Default label color
         },
         tabBarActiveTintColor: "#FF7900", // Color for the selected tab icon and label
         tabBarInactiveTintColor: "#FFFFFF", // Color for unselected tab icons and labels
-      }}
+
+        // iOS-specific styling for light/dark mode
+        tabBarItemStyle: Platform.select({
+          ios: {
+            // No specific styles needed here, as we're handling the background dynamically
+          },
+          default: {
+            //  styles for android
+          }
+        }),
+      })}
     >
       {/* Dashboard Tab */}
       <Tabs.Screen
@@ -80,60 +90,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-
-
-// import { Stack, useRouter, useSegments } from 'expo-router';
-// import { useEffect, useState } from 'react';
-// import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-// import { View, ActivityIndicator } from 'react-native';
-
-// export default function RootLayout() {
-// 	const [initializing, setInitializing] = useState(true);
-// 	const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
-// 	const router = useRouter();
-// 	const segments = useSegments();
-
-// 	const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
-// 		console.log('onAuthStateChanged', user);
-// 		setUser(user);
-// 		if (initializing) setInitializing(false);
-// 	};
-
-// 	useEffect(() => {
-// 		const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-// 		return subscriber;
-// 	}, []);
-
-// 	useEffect(() => {
-// 		if (initializing) return;
-
-// 		const inAuthGroup = segments[0] === '(auth)';
-
-// 		if (user && !inAuthGroup) {
-// 			router.replace('/(auth)/home');
-// 		} else if (!user && inAuthGroup) {
-// 			router.replace('/');
-// 		}
-// 	}, [user, initializing]);
-
-// 	if (initializing)
-// 		return (
-// 			<View
-// 				style={{
-// 					alignItems: 'center',
-// 					justifyContent: 'center',
-// 					flex: 1
-// 				}}
-// 			>
-// 				<ActivityIndicator size="large" />
-// 			</View>
-// 		);
-
-// 	return (
-// 		<Stack>
-// 			<Stack.Screen name="index" options={{ title: 'Login' }} />
-// 			<Stack.Screen name="(auth)" options={{ headerShown: false }} />
-// 		</Stack>
-// 	);
-// }
