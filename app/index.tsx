@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Toast from 'react-native-toast-message';
 import {
   View,
   Text,
@@ -7,21 +8,36 @@ import {
   TouchableOpacity,
   SafeAreaView,
 } from "react-native";
-import { useNavigation } from '@react-navigation/native';
 import { router } from "expo-router";
+import { signInWithEmailAndPassword } from 'firebase/auth'
+import { auth } from "../firebase.config";
 
 const Index = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const navigation = useNavigation(); // Access navigation prop
 
   // Handle Login Button Click
-  const handleLogin = () => {
+  const handleLogin = async () => {
     // For now, you can add validation checks here
     if (email && password) {
-      // Navigate to the desired screen after login
-      router.push('/(tabs)')
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        if (user) {
+          router.push('/(tabs)')
+        }
+      } catch (error) {
+        const r = (error as Error)
+        const m = r.message;
+        const errorMessage = m.replace(/^Firebase: /, '').replace(/ \(.+\)\.$/, '').trim();
+        console.log(errorMessage);
+        Toast.show({
+          type: 'error',
+          text1: errorMessage,
+        });
+      }
+
     } else {
       // Add error handling or alert if necessary
       alert('Please enter valid credentials');
@@ -43,7 +59,6 @@ const Index = () => {
             Welcome
           </Text>
         </View>
-
         {/* Input Fields */}
         <View className="w-full mb-8">
           <View className="mb-6">
@@ -88,8 +103,6 @@ const Index = () => {
               </Text>
             </TouchableOpacity>
           </View>
-
-          {/* Button */}
           <TouchableOpacity
             className="bg-[#ff7900] py-3 items-center rounded-md mb-6"
             onPress={handleLogin} // Call handleLogin when clicked
@@ -100,7 +113,9 @@ const Index = () => {
 
         <Text className="text-sm text-[#525a66] text-center font-normal mb-6">
           Don&apos;t have an account?{" "}
-          <Text className="text-[#ff7900] font-medium">Create Account</Text>
+          <TouchableOpacity onPress={() => router.push("/(auth)/signup")}>
+            <Text className="text-[#ff7900] font-medium">Create Account</Text>
+          </TouchableOpacity>
         </Text>
 
         {/* Divider */}
@@ -134,6 +149,7 @@ const Index = () => {
           </TouchableOpacity>
         </View>
       </View>
+      <Toast />
     </SafeAreaView>
   );
 };
