@@ -97,7 +97,7 @@ const Index = () => {
           </View>
 
           <View className="flex-row justify-between items-center mb-6">
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/(auth)/passRecover")}>
               <Text className="text-[#6750A4] text-sm font-medium">
                 Forgot Password?
               </Text>
