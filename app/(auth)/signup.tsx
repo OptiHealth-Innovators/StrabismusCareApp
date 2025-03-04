@@ -38,17 +38,17 @@ const SignUp = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 pt-10 px-4 pb-4">
+    <SafeAreaView className="flex-1 bg-white items-center justify-center">
+      <View className="w-4/5">
         {/* Icon */}
         <Image
           source={require("../../assets/images/icon-hz.png")}
-          className="mt-12 h-8 w-[230px]"
+          className="mt-4 mb-4 h-8 w-[230px] self-center"
         />
 
         {/* Title */}
-        <View className="mb-6">
-          <Text className="text-2xl text-[#240046] pt-4 font-manrope-semibold">
+        <View className="mb-8">
+          <Text className="text-2xl text-[#240046] pt-4 font-manrope-semibold text-center">
             Create a new account
           </Text>
         </View>
@@ -62,7 +62,7 @@ const SignUp = () => {
             </Text>
             <TextInput
               className="border border-[#e9e9e9] rounded px-3 py-2 text-base text-black font-manrope-regular"
-              placeholder="Adam Costa"
+              placeholder="Enter your name "
               placeholderTextColor="#aaa"
             />
           </View>
@@ -74,7 +74,7 @@ const SignUp = () => {
             </Text>
             <TextInput
               className="border border-[#e9e9e9] rounded px-3 py-2 text-base text-black font-manrope-regular"
-              placeholder="adam.costa@email.com"
+              placeholder="Enter your email"
               placeholderTextColor="#aaa"
               value={email}
               onChangeText={setEmail}
@@ -99,24 +99,26 @@ const SignUp = () => {
 
         {/* Button */}
         <TouchableOpacity
-          className="bg-[#ff7900] py-3 items-center rounded mb-4"
+          className="bg-[#ff7900] py-3 items-center rounded mb-10"
           onPress={createAccount}
         >
-          <Text className="text-sm text-white font-manrope-medium font-[500]">
-            Create Account
+          <Text className="text-lg text-white font-manrope-medium font-[500]">
+            Sign up
           </Text>
         </TouchableOpacity>
 
         {/* Already have an account */}
-        <Text className="text-sm text-[#525a66] text-center font-manrope-regular font-[400]">
-          Already have an account?{' '}
+        <View className="flex-row justify-center mb-4">
+          <Text className="text-lg text-[#525a66] text-center font-manrope-regular font-[800]">
+            Already have an account?{' '}
+          </Text>
           <TouchableOpacity onPress={() => router.push("/")}>
-            <Text className="text-[#ff7900] font-[500]">Sign in</Text>
+            <Text className="text-lg text-[#ff7900] font-manrope-regular font-[800]">Sign in</Text>
           </TouchableOpacity>
-        </Text>
+        </View>
 
         {/* Divider */}
-        <View className="flex-row items-center my-9 mt-9">
+        <View className="flex-row items-center mb-4">
           <View className="flex-1 h-[0.8px] bg-[#e9e9e9]" />
           <Text className="mx-2 text-sm text-[#525a66] font-manrope-semibold font-[600]">
             Or Sign up with

@@ -1,3 +1,4 @@
+// app/account-settings.tsx
 import React, { useState } from "react";
 import {
   View,
@@ -7,9 +8,9 @@ import {
   Image,
   Alert,
 } from "react-native";
+import { Stack } from "expo-router"; // Import Stack
 
-const AccountSettings = () => {
-  // State variables for form fields
+const account = () => {
   const [name, setName] = useState("Rayna Carder");
   const [email, setEmail] = useState("adam.costa@email.com");
   const [contact, setContact] = useState("(86) 186157-43612");
@@ -19,22 +20,30 @@ const AccountSettings = () => {
     Alert.alert("Success", "Your changes have been saved!");
   };
 
-  const handleChangeProfilePicture = () => {
+    const handleChangeProfilePicture = () => {
     Alert.alert("Profile Picture", "Feature to change profile picture coming soon!");
   };
 
   return (
     <View className="flex-1 bg-white p-4">
-      {/* Header */}
-      <Text className="text-lg font-bold text-indigo-700 mb-6">Account Settings</Text>
+      {/* Removed Header Text - Now handled by custom header in _layout.tsx */}
+       <Stack.Screen options={{
+          headerTitle: "Account Settings",
+          headerTitleAlign: 'center',
+          headerStyle: {
+            backgroundColor: 'white', // optional, set background color
 
+          },
+          headerTintColor: '#4338ca',
+          headerBackTitle: "Back",
+        }} />
       {/* Profile Picture Section */}
       <TouchableOpacity
         className="items-center mb-6"
         onPress={handleChangeProfilePicture}
       >
         <Image
-         source={require("@/assets/images/doc.png")}
+          source={require("@/assets/images/doc.png")}
           className="w-24 h-24 rounded-full mb-2"
         />
         <Text className="text-indigo-700 font-semibold">Change Profile Picture</Text>
@@ -53,7 +62,7 @@ const AccountSettings = () => {
         <TextInput
           className="border border-gray-300 rounded-lg p-3 text-sm text-gray-400 bg-gray-100 mb-4"
           value={email}
-          editable={false} // Email is non-editable
+          editable={false}
         />
 
         <Text className="text-sm text-gray-800 mb-1">Contact</Text>
@@ -82,4 +91,5 @@ const AccountSettings = () => {
   );
 };
 
-export default AccountSettings;
+export default account;
+
