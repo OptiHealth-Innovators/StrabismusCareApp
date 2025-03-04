@@ -90,11 +90,19 @@ const MenuScreen: React.FC = () => {
           title="Change Password"
           href="../components/change-password" // <-- Navigate to app/change-password.tsx
           icon={<Feather name="lock" size={24} color="#FF7900" />}
+          onPress={() => router.push("/change-password")}
+        />
+        <MenuItem
+          title="Help Center"
+          icon={<MaterialIcons name="help-outline" size={24} color="#FF7900" />}
+          onPress={() => router.push("/help-center")}
         />
         <MenuItem
           title="Terms & Conditions"
           externalUrl="https://example.com/terms" // Replace with your actual URL
           icon={<Feather name="file-text" size={24} color="#FF7900" />}
+          external={true}
+          onPress={() => {/* Handle external link */ }}
         />
         <MenuItem
           title="News & Blogs"
