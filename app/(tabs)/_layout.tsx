@@ -1,5 +1,5 @@
 import React from "react";
-import { Platform, View } from "react-native"; // Import View
+import { Platform } from "react-native"; // Import View
 import { Tabs } from "expo-router";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";

@@ -4,7 +4,8 @@ import HealthArticle from "@/components/HealthArticle";
 import React from "react";
 import Testes from "@/components/Testes";
 import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import TestsComponent from "@/components/Testes";
+import Tests from "@/components/Testes";
+import { Link } from "expo-router";
 
 const handleBookAppointment = () => {
   alert("Appointment Booked");

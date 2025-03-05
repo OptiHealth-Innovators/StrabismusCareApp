@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Toast from 'react-native-toast-message';
+import Toast from "react-native-toast-message";
 import {
   View,
   Text,
@@ -26,47 +26,54 @@ const Index = () => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         if (user) {
-          router.push('/(tabs)')
+          router.push("/(tabs)");
         }
       } catch (error) {
-        const r = (error as Error)
+        const r = error as Error;
         const m = r.message;
-        const errorMessage = m.replace(/^Firebase: /, '').replace(/ \(.+\)\.$/, '').trim();
+        const errorMessage = m
+          .replace(/^Firebase: /, "")
+          .replace(/ \(.+\)\.$/, "")
+          .trim();
         console.log(errorMessage);
         Toast.show({
-          type: 'error',
+          type: "error",
           text1: errorMessage,
         });
       }
-
     } else {
       // Add error handling or alert if necessary
-      alert('Please enter valid credentials');
+      alert("Please enter valid credentials");
     }
+
+    // need to remove this line when the above code is implemented
+    router.push("/(tabs)");
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <View className="flex-1 pt-10 px-6 pb-6">
+    <SafeAreaView className="flex-1 bg-white items-center justify-center">
+      <View className=" w-4/5">
         {/* Logo */}
         <Image
           source={require("../assets/images/icon-hz.png")}
-          className="mt-12 h-8 w-56 self-center"
+          className="mt-4 mb-4 h-8 w-[230px] self-center"
         />
 
         {/* Title */}
         <View className="mb-8">
-          <Text className="text-3xl text-[#240046] pt-4 font-semibold text-center">
-            Welcome
+          <Text className="text-2xl text-[#240046] pt-4 font-manrope-semibold text-center">
+            Welcome!
           </Text>
         </View>
         {/* Input Fields */}
         <View className="w-full mb-8">
           <View className="mb-6">
-            <Text className="text-sm text-[#525a66] mb-2 font-normal">Email</Text>
+            <Text className="text-sm text-[#525a66] mb-2 font-normal">
+              Email
+            </Text>
             <TextInput
               className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
-              placeholder="adam.costa@email.com"
+              placeholder="Enter your email"
               placeholderTextColor="#aaa"
               value={email}
               onChangeText={setEmail}
@@ -74,7 +81,9 @@ const Index = () => {
           </View>
 
           <View className="mb-6 relative">
-            <Text className="text-sm text-[#525a66] mb-2 font-normal">Password</Text>
+            <Text className="text-sm text-[#525a66] mb-2 font-normal">
+              Password
+            </Text>
             <TextInput
               className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
               placeholder="Enter your password"
@@ -105,10 +114,10 @@ const Index = () => {
             </TouchableOpacity>
           </View>
           <TouchableOpacity
-            className="bg-[#ff7900] py-3 items-center rounded-md mb-6"
+            className="bg-[#ff7900] py-3 items-center rounded mb-4"
             onPress={handleLogin} // Call handleLogin when clicked
           >
-            <Text className="text-sm text-white font-medium">Sign In</Text>
+            <Text className="text-lg text-white font-manrope-medium font-[500]">Sign in</Text>
           </TouchableOpacity>
         </View>
 
@@ -120,10 +129,10 @@ const Index = () => {
         </Text>
 
         {/* Divider */}
-        <View className="flex-row items-center my-7">
+        <View className="flex-row items-center mb-4">
           <View className="flex-1 h-[0.8px] bg-[#e9e9e9]" />
           <Text className="mx-2 text-sm text-[#525a66] font-semibold">
-            Or Sign up with
+            Or Sign in with
           </Text>
           <View className="flex-1 h-[0.8px] bg-[#e9e9e9]" />
         </View>
@@ -156,3 +165,19 @@ const Index = () => {
 };
 
 export default Index;
+
+
+// import React from 'react'
+// import { Text, View } from 'react-native'
+
+// const index = () => {
+//   return (
+//     <View>
+//       <Text>Home</Text>
+//     </View>
+//   )
+// }
+
+// export default index
+
+
