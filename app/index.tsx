@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { signInWithEmailAndPassword } from 'firebase/auth'
-import { auth } from "../firebase.config";
+import { getAuth } from 'firebase/auth';
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -22,6 +22,7 @@ const Index = () => {
     // For now, you can add validation checks here
     if (email && password) {
       try {
+        const auth = getAuth();
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
         if (user) {
