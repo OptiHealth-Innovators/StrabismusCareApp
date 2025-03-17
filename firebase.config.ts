@@ -1,6 +1,6 @@
-// firebaseConfig.js
-import { initializeApp } from "firebase/app";
-import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth";
+// firebase.config.ts
+import { initializeApp, FirebaseApp } from "firebase/app";
+import { getAuth, initializeAuth, getReactNativePersistence, Auth } from "firebase/auth"; // Import Auth and FirebaseApp
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const firebaseConfig = {
@@ -13,11 +13,11 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase ONLY ONCE.
-let app;
-let auth;
+let app: FirebaseApp | undefined; // Explicitly type app and allow undefined
+let auth: Auth | undefined; // Explicitly type auth and allow undefined
 
 // Check if Firebase is already initialized.
-if (!app) { // Check if the app instance is undefined, not getAuth()
+if (!app) {
   try {
     app = initializeApp(firebaseConfig);
     auth = initializeAuth(app, {
@@ -28,8 +28,9 @@ if (!app) { // Check if the app instance is undefined, not getAuth()
     // Handle the error appropriately.  Maybe show an error message to the user.
   }
 } else {
+  // This else block is likely redundant now, as app should only be initialized once.
+  //  But, we'll keep it and getAuth for completeness, in case the initialization logic changes.
   auth = getAuth(app); // Pass the app instance to getAuth()
 }
 
 export { auth, app }; // Export both app and auth
-

@@ -5,6 +5,7 @@ import * as Font from "expo-font";
 import "../global.css";
 import { StatusBar } from "expo-status-bar";
 import { CustomSplashScreen } from "@/components/CustomSplashScreen";
+import Toast from "react-native-toast-message";
 
 export default function RootLayout() {
   const [loaded, setLoaded] = useState(false);
@@ -55,6 +56,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />
+      <Toast />
     </>
   );
 }
