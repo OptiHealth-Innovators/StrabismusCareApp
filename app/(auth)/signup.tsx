@@ -127,7 +127,7 @@ const SignUp: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:3020/register', {
+      const response = await fetch('http://localhost:3000/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
