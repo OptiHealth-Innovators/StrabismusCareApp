@@ -13,11 +13,9 @@ const handleBookAppointment = () => {
 
 const Dashboard: React.FC = () => {
   return (
-    <View className="flex-1 bg-[#2E004F] mb-10">
-      <ScrollView className="pt-4">
-        {/* Header Section */}
+    <View className="flex-1 bg-[#2E004F]">
+      <ScrollView className="pt-4 mb-16">
         <View className="p-4 pt-8">
-          {/* User Greeting */}
           <View className="flex-row items-center pt-5">
             <Image
               source={require("@/assets/images/doc.png")}
@@ -67,9 +65,9 @@ const Dashboard: React.FC = () => {
             <Text className="text-lg  font-bold text-[#333333]">
               Top Doctors
             </Text>
-            <TouchableOpacity>
+            {/* <TouchableOpacity>
               <Text className="text-[#FF7900] font-[16] pr-6">See All</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           <ScrollView
             horizontal
