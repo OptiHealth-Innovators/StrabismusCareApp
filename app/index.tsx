@@ -189,7 +189,7 @@ const Index: React.FC = () => {
               disabled={loading}
             >
               <Text
-                className={`text-[#6750A4] text-sm font-medium ${loading ? "opacity-50" : ""
+                className={`text-[#ff7900] text-sm font-medium ${loading ? "opacity-50" : ""
                   }`}
               >
                 Forgot Password?

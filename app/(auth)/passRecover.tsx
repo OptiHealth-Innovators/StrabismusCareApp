@@ -1,205 +1,156 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
     TextInput,
     Image,
     TouchableOpacity,
-    StyleSheet,
+    Alert,
+    ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
+import { useColorScheme } from "nativewind";
 
-const passRecover: React.FC = ({ navigation }: any) => {
+const PassRecover: React.FC = ({ navigation }: any) => {
+    const { colorScheme } = useColorScheme();
+    const [email, setEmail] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Email validation function
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    // Generate random password
+    const generatePassword = () => {
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+        let password = "";
+        for (let i = 0; i < 10; i++) {
+            password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return password;
+    };
+
+    // Handle password recovery
+    const handlePasswordRecovery = async () => {
+        // Clear previous errors
+        setEmailError("");
+        
+        // Validate email
+        if (!email.trim()) {
+            setEmailError("Email is required");
+            return;
+        }
+        
+        if (!validateEmail(email)) {
+            setEmailError("Please enter a valid email address");
+            return;
+        }
+        
+        try {
+            setIsLoading(true);
+            
+            // In a real app, you would make an API call to your backend
+            // This is a simulation of that process
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Generate a new password
+            const newPassword = generatePassword();
+            
+            // In production, you would send this password to the user's email
+            // Here we're just simulating that with an alert
+            
+            setIsLoading(false);
+            
+            Alert.alert(
+                "Password Recovery",
+                `A new password has been generated and sent to ${email}. Please check your inbox.`,
+                [
+                    {
+                        text: "OK",
+                        onPress: () => router.push("/")
+                    }
+                ]
+            );
+            
+            // Log for demonstration purposes (remove in production)
+            console.log(`New password for ${email}: ${newPassword}`);
+            
+        } catch (error) {
+            setIsLoading(false);
+            Alert.alert("Error", "Failed to process your request. Please try again later.");
+            console.error(error);
+        }
+    };
+
     return (
-        <View style={styles.container}>
+        <View className="flex-1 bg-white relative pt-20">
             {/* Back Button */}
-            <TouchableOpacity style={styles.topHeader} onPress={() => router.push("/")}>
+            {/* <TouchableOpacity 
+                className="flex-row items-center px-4 mt-8" 
+                onPress={() => router.push("/")}
+            >
                 <Image
-                    style={styles.backArrow}
+                    className="w-8 h-8"
                     source={require("@/assets/images/back-button.png")}
                 />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
+            
             <Image
                 source={require("@/assets/images/logo-hz.png")}
-                style={styles.logo}
+                className="w-[230px] h-[33px] ml-2"
                 resizeMode="contain"
             />
 
+            <View className="flex-1 mt-8 px-4 items-center">
+                <Text className="text-[#240046] text-2xl font-semibold mb-6">
+                    Password Recovery
+                </Text>
 
-            <View style={styles.mainContent}>
-                <Text style={styles.title}>Password Recovery</Text>
-
-                <View style={styles.inputWrapper}>
+                <View className={`w-full max-w-[358px] mb-2 relative ${emailError ? 'border-red-500' : ''}`}>
                     <TextInput
-                        style={styles.input}
+                        className={`w-full py-3 px-3 border ${emailError ? 'border-red-500' : 'border-gray-400'} rounded-md text-base text-gray-800 `}
                         placeholder="Enter your email"
-                        placeholderTextColor="#79747e"
+                        placeholderTextColor={"#79747e"}
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
                     />
-                    <Text style={styles.inputLabel}>Email</Text>
+                    <Text className="absolute -top-2.5 left-3 bg-white  px-1 text-xs text-gray-800 ">
+                        Email
+                    </Text>
                 </View>
-                {/* Send Code Button */}
+                
+                {emailError ? (
+                    <Text className="text-red-600 text-xs self-start ml-4 mb-4">
+                        {emailError}
+                    </Text>
+                ) : null}
+                
+                <Text className="text-sm text-gray-500  text-center mb-6 px-4">
+                    Enter your email address and we'll send you a new password to log in with.
+                </Text>
+
+                {/* Recover Button */}
                 <TouchableOpacity
-                    style={styles.sendCodeButton}
-                    onPress={() => navigation.navigate("OTP")}
+                    className="w-full max-w-[358px] py-3 bg-[#ff6d00] rounded-lg items-center justify-center absolute bottom-5 left-4 right-4"
+                    onPress={handlePasswordRecovery}
+                    disabled={isLoading}
                 >
-                    <Text style={styles.buttonText}>Recover</Text>
+                    {isLoading ? (
+                        <ActivityIndicator color="#ffffff" />
+                    ) : (
+                        <Text className="text-white text-sm font-medium">
+                            Recover
+                        </Text>
+                    )}
                 </TouchableOpacity>
             </View>
         </View>
     );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#ffffff",
-        position: "relative",
-    },
-    topHeader: {
-        flexDirection: "row",
-        alignItems: "center",
-        paddingHorizontal: 16,
-        marginTop: 32,
-    },
-    logo: {
-        width: 230,
-        height: 33,
-        marginLeft: 8,
-    },
-    backArrow: {
-        width: 32,
-        height: 32,
-    },
-
-    /* Background Image */
-    backgroundImage: {
-        position: "absolute",
-        opacity: 0.2,
-        width: 400,
-        height: 400,
-        bottom: -100,
-        right: -50,
-    },
-
-    /* Back Button */
-    backButton: {
-        position: "absolute",
-        top: 68,
-        left: 16,
-    },
-    backButtonFrame: {
-        width: 32,
-        height: 32,
-        backgroundColor: "#fff5e5",
-        borderRadius: 8,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    arrowIcon: {
-        width: 24,
-        height: 24,
-    },
-
-    /* iOS Status Bar */
-    statusBar: {
-        width: "100%",
-        height: 44,
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingHorizontal: 16,
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 0.5 },
-        shadowOpacity: 0.3,
-        shadowRadius: 0.5,
-    },
-    statusBarLeft: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    time: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#000",
-    },
-    geoIcon: {
-        marginLeft: 4,
-        fontSize: 16,
-    },
-    statusBarRight: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-    icon: {
-        width: 16,
-        height: 16,
-        marginLeft: 4,
-    },
-    batteryWrapper: {
-        flexDirection: "row",
-        alignItems: "center",
-    },
-
-    /* Main Content */
-    mainContent: {
-        flex: 1,
-        marginTop: 32,
-        paddingHorizontal: 16,
-        alignItems: "center",
-    },
-    title: {
-        color: "#240046",
-        fontSize: 24,
-        fontWeight: "600",
-        marginBottom: 24,
-    },
-
-    /* Email Input */
-    inputWrapper: {
-        width: "100%",
-        maxWidth: 358,
-        marginBottom: 16,
-        position: "relative",
-    },
-    input: {
-        width: "100%",
-        padding: 12,
-        borderWidth: 1,
-        borderColor: "#79747e",
-        borderRadius: 4,
-        fontSize: 16,
-        color: "#1c1b1f",
-    },
-    inputLabel: {
-        position: "absolute",
-        top: -10,
-        left: 12,
-        backgroundColor: "#ffffff",
-        paddingHorizontal: 4,
-        fontSize: 12,
-        color: "#1c1b1f",
-    },
-
-    /* Send Code Button */
-    sendCodeButton: {
-        width: "100%",
-        maxWidth: 358,
-        paddingVertical: 12,
-        backgroundColor: "#ff6d00",
-        borderRadius: 8,
-        alignItems: "center",
-        justifyContent: "center",
-        position: "absolute", // Position the button absolutely
-        bottom: 20, // Distance from the bottom of the screen
-        left: 16, // Distance from the left of the screen
-        right: 16,
-    },
-    buttonText: {
-        color: "#ffffff",
-        fontSize: 14,
-        fontWeight: "500",
-    },
-});
-
-export default passRecover;
+export default PassRecover;

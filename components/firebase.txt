@@ -1,0 +1,53 @@
+
+// import { createUserWithEmailAndPassword } from "firebase/auth";
+// import { auth } from "../../firebase.config";
+
+// {/* Divider */}
+// <View className="flex-row items-center mb-4">
+// <View className="flex-1 h-[0.8px] bg-[#e9e9e9]" />
+// <Text className="mx-2 text-sm text-[#525a66] font-manrope-semibold font-[600]">
+//   Or Sign up with
+// </Text>
+// <View className="flex-1 h-[0.8px] bg-[#e9e9e9]" />
+// </View>
+
+// {/* Social Media Buttons */}
+// <View className="flex-row justify-between w-full mt-1">
+// <TouchableOpacity className="flex-1 items-center justify-center mx-1">
+//   <Image
+//     source={require('../../assets/images/google.png')}
+//     className="w-9 h-9"
+//   />
+// </TouchableOpacity>
+// <TouchableOpacity className="flex-1 items-center justify-center mx-1">
+//   <Image
+//     source={require('../../assets/images/facebook.png')}
+//     className="w-9 h-9"
+//   />
+// </TouchableOpacity>
+// <TouchableOpacity className="flex-1 items-center justify-center mx-1">
+//   <Image
+//     source={require('../../assets/images/apple.png')}
+//     className="w-9 h-9"
+//   />
+// </TouchableOpacity>
+// </View>
+
+// if (email && password) {
+//   try {
+//     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+//     const user = userCredential.user;
+//     if (user) {
+//       router.push('/(tabs)')
+//     }
+//   } catch (error) {
+//     const r = (error as Error)
+//     const m = r.message;
+//     const errorMessage = m.replace(/^Firebase: /, '').replace(/ \(.+\)\.$/, '').trim();
+//     console.log(errorMessage);
+//     Toast.show({
+//       type: 'error',
+//       text1: errorMessage,
+//     });
+//   }
+// }
