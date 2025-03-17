@@ -14,6 +14,37 @@ const SearchBarWithBadge = () => {
     alert("Appointment Booked");
   };
 
+  const doctors = [
+    {
+      name: "Dr. John Tauhid",
+      specialty: "Cardiologist",
+      rating: 4.8,
+      date: "16th Jan 2025",
+      time: "10:30 AM",
+    },
+    {
+      name: "Dr. John Doe",
+      specialty: "Cardiologist",
+      rating: 4.8,
+      date: "16th Jan 2025",
+      time: "10:30 AM",
+    },
+    {
+      name: "Dr. John Doe",
+      specialty: "Cardiologist",
+      rating: 4.8,
+      date: "16th Jan 2025",
+      time: "10:30 AM",
+    },
+    {
+      name: "Dr. John Doe",
+      specialty: "Cardiologist",
+      rating: 4.8,
+      date: "16th Jan 2025",
+      time: "10:30 AM",
+    },
+  ];
+
   return (
     <View className="p-6 pt-12">
       <View className="flex-row items-center justify-between bg-white border border-gray-300 rounded-lg p-2">
@@ -26,7 +57,6 @@ const SearchBarWithBadge = () => {
           />
         </View>
 
-        {/* Notification Badge */}
         <TouchableOpacity className="relative">
           <View className="bg-orange-500 w-8 h-8 rounded-lg items-center justify-center">
             <MaterialIcons name="filter-list" size={20} color="white" />
@@ -40,48 +70,17 @@ const SearchBarWithBadge = () => {
         contentContainerStyle={{ paddingBottom: 16 }} 
         className="mb-4"
       >
-        <DoctorCard
-          name="Dr. John Tauhid"
-          specialty="Cardiologist"
-          rating={4.8}
-          date="16th Jan 2025"
-          time="10:30 AM"
-          onPress={handleBookAppointment}
-        />
-
-        <DoctorCard
-          name="Dr. John Doe"
-          specialty="Cardiologist"
-          rating={4.8}
-          date="16th Jan 2025"
-          time="10:30 AM"
-          onPress={handleBookAppointment}
-        />
-
-        <DoctorCard
-          name="Dr. John Doe"
-          specialty="Cardiologist"
-          rating={4.8}
-          date="16th Jan 2025"
-          time="10:30 AM"
-          onPress={handleBookAppointment}
-        />
-        <DoctorCard
-          name="Dr. John Doe"
-          specialty="Cardiologist"
-          rating={4.8}
-          date="16th Jan 2025"
-          time="10:30 AM"
-          onPress={handleBookAppointment}
-        />
-        <DoctorCard
-          name="Dr. John Doe"
-          specialty="Cardiologist"
-          rating={4.8}
-          date="16th Jan 2025"
-          time="10:30 AM"
-          onPress={handleBookAppointment}
-        />
+        {doctors.map((doctor, index) => (
+          <DoctorCard
+            key={index}
+            name={doctor.name}
+            specialty={doctor.specialty}
+            rating={doctor.rating}
+            date={doctor.date}
+            time={doctor.time}
+            onPress={handleBookAppointment}
+          />
+        ))}
       </ScrollView>
     </View>
   );

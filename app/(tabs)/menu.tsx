@@ -7,7 +7,7 @@ import { router } from "expo-router"; // Import  router
 
 interface MenuItemProps {
   title: string;
-  href?: string; // Internal route (optional)
+  href?: `/${string}` | `../${string}` | `(${string})` | `/(${string})` | string; // Internal route (optional)
   externalUrl?: string; // External URL (optional)
   icon: React.ReactNode;
   onPress?: () => void; // Optional onPress handler
@@ -26,7 +26,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
     }
 
     if (href) {
-      router.push(href); // Navigate internally using router.push
+      router.push(href as any);
     } else if (externalUrl) {
       Linking.openURL(externalUrl); // Open external URL
     }
@@ -60,8 +60,8 @@ const MenuScreen: React.FC = () => {
   const handleLogout = () => {
     // Implement your logout logic here (e.g., clear user session, navigate to login)
     // Example:
-    // authService.logout(); // Hypothetical logout function
-    router.replace("/"); // Redirect to login screen after logout
+    // authService.logout(); 
+    router.replace("/"); 
   };
 
   return (
@@ -76,11 +76,6 @@ const MenuScreen: React.FC = () => {
       </View>
 
       <View className="mt-8">
-        {/* <MenuItem
-          title="Wallet"
-          href="/wallet" //  <--  Navigate to app/wallet.tsx
-          icon={<Feather name="credit-card" size={24} color="#FF7900" />}
-        /> */}
         <MenuItem
           title="Account Settings"
           href="../components/account-settings" // <--  Correct route!
@@ -88,37 +83,34 @@ const MenuScreen: React.FC = () => {
         />
         <MenuItem
           title="Change Password"
-          href="../components/change-password" // <-- Navigate to app/change-password.tsx
+          href="../components/change-password"
           icon={<Feather name="lock" size={24} color="#FF7900" />}
-          onPress={() => router.push("/change-password")}
         />
         <MenuItem
           title="Help Center"
           icon={<MaterialIcons name="help-outline" size={24} color="#FF7900" />}
-          onPress={() => router.push("/help-center")}
+          externalUrl="https://example.com/help"
         />
         <MenuItem
           title="Terms & Conditions"
-          externalUrl="https://example.com/terms" // Replace with your actual URL
+          externalUrl="https://example.com/terms"
           icon={<Feather name="file-text" size={24} color="#FF7900" />}
-          external={true}
-          onPress={() => {/* Handle external link */ }}
         />
         <MenuItem
           title="News & Blogs"
-          externalUrl="https://example.com/news" // Replace with your actual URL
+          externalUrl="https://example.com/news"
           icon={<MaterialIcons name="article" size={24} color="#FF7900" />}
         />
         <MenuItem
           title="Support"
-          externalUrl="https://example.com/support" // Replace with your actual URL
+          externalUrl="https://example.com/support"
           icon={<Feather name="headphones" size={24} color="#FF7900" />}
         />
       </View>
 
       <TouchableOpacity
-        className="bg-[#FF7900] mx-8 mt-auto mb-4 py-3 rounded-lg items-center"
-        onPress={handleLogout} // Add onPress handler for logout
+        className="bg-[#FF7900] mx-8 mt-36 mb-4 py-3 rounded-lg items-center"
+        onPress={handleLogout}
       >
         <Text className="text-white text-lg font-semibold">Logout</Text>
       </TouchableOpacity>
@@ -131,4 +123,3 @@ const MenuScreen: React.FC = () => {
 };
 
 export default MenuScreen;
-
