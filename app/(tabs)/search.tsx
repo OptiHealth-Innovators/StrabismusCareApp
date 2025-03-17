@@ -29,7 +29,20 @@ const SearchBarWithBadge = () => {
       date: "16th Jan 2025",
       time: "10:30 AM",
     },
-    // Add more doctor objects here
+    {
+      name: "Dr. John Doe",
+      specialty: "Cardiologist",
+      rating: 4.8,
+      date: "16th Jan 2025",
+      time: "10:30 AM",
+    },
+    {
+      name: "Dr. John Doe",
+      specialty: "Cardiologist",
+      rating: 4.8,
+      date: "16th Jan 2025",
+      time: "10:30 AM",
+    },
   ];
 
   return (
@@ -44,7 +57,6 @@ const SearchBarWithBadge = () => {
           />
         </View>
 
-        {/* Notification Badge */}
         <TouchableOpacity className="relative">
           <View className="bg-orange-500 w-8 h-8 rounded-lg items-center justify-center">
             <MaterialIcons name="filter-list" size={20} color="white" />

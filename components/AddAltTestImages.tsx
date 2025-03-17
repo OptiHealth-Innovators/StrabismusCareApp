@@ -70,7 +70,6 @@ export default function AddAltTestImages() {
               <Text className="text-2xl mr-4">&#x1F4C1;</Text> {/* Gallery Icon */}
               <Text className="text-lg">Upload from gallery</Text>
             </TouchableOpacity>
-            {/* Close Button (Implicit - clicking outside modal) */}
           </View>
         </View>
       </Modal>
@@ -80,10 +79,10 @@ export default function AddAltTestImages() {
 
 const styles = StyleSheet.create({
     modalLine: {
-        width: 40, // Adjust the width as needed
-        height: 5,  // Adjust the height as needed
+        width: 40,
+        height: 5,
         backgroundColor: 'gray',
-        borderRadius: 5, // Make it rounded
-        alignSelf: 'center', // Center horizontally
+        borderRadius: 5,
+        alignSelf: 'center',
       },
 })
