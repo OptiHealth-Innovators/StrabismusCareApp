@@ -7,7 +7,7 @@ import { router } from "expo-router"; // Import  router
 
 interface MenuItemProps {
   title: string;
-  href?: string; // Internal route (optional)
+  href?: `/${string}` | `../${string}` | `(${string})` | `/(${string})` | string; // Internal route (optional)
   externalUrl?: string; // External URL (optional)
   icon: React.ReactNode;
   onPress?: () => void; // Optional onPress handler
@@ -26,7 +26,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
     }
 
     if (href) {
-      router.push(href); // Navigate internally using router.push
+      router.push(href as any);
     } else if (externalUrl) {
       Linking.openURL(externalUrl); // Open external URL
     }
@@ -60,8 +60,8 @@ const MenuScreen: React.FC = () => {
   const handleLogout = () => {
     // Implement your logout logic here (e.g., clear user session, navigate to login)
     // Example:
-    // authService.logout(); // Hypothetical logout function
-    router.replace("/"); // Redirect to login screen after logout
+    // authService.logout(); 
+    router.replace("/"); 
   };
 
   return (

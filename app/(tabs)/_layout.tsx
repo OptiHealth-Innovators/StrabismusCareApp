@@ -73,7 +73,7 @@ export default function TabLayout() {
 
       {/* Menu Tab */}
       <Tabs.Screen
-        name="menuMain"
+        name="menu"
         options={{
           title: "Menu",
           tabBarIcon: ({ color, size }) => (
