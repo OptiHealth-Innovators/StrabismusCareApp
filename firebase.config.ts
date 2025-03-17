@@ -34,4 +34,3 @@ if (!app) {
 }
 
 export { auth, app }; // Export both app and auth
-
