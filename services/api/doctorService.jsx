@@ -7,6 +7,11 @@ export const doctorService = {
       const response = await apiClient.get('/doctors');
       return response.data;
     } catch (error) {
+      // More specific error handling
+      if (error.code === 'ERR_NETWORK') {
+        console.error('Network error - check if backend is running:', error);
+        throw new Error('Cannot connect to server. Please check your internet connection.');
+      }
       console.error('Error fetching doctors:', error);
       throw error;
     }

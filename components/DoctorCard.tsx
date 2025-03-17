@@ -1,5 +1,6 @@
+// components/DoctorCard.tsx
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 
 type DoctorCardProps = {
   name: string;
@@ -8,6 +9,7 @@ type DoctorCardProps = {
   date: string;
   time: string;
   onPress: () => void;
+  profileImage?: string;
 };
 
 const DoctorCard: React.FC<DoctorCardProps> = ({
@@ -17,46 +19,94 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   date,
   time,
   onPress,
+  profileImage,
 }) => {
+  // Safely format date without using date-fns
+  const formatDateSafely = () => {
+    if (!date || date === "No available slots") return null;
+    
+    try {
+      const dateObj = new Date(date);
+      
+      // Check if date is valid
+      if (isNaN(dateObj.getTime())) {
+        return null;
+      }
+      
+      // Get day name
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const dayName = days[dateObj.getDay()];
+      
+      // Get month name
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthName = months[dateObj.getMonth()];
+      
+      return {
+        dayName,
+        formattedDate: `${monthName} ${dateObj.getDate()}, ${dateObj.getFullYear()}`
+      };
+    } catch (e) {
+      console.log("Error formatting date:", e);
+      return null;
+    }
+  };
+  
+  const dateInfo = formatDateSafely();
+  
   return (
-    <View style={styles.cardTop}>
+    <View className="bg-white rounded-2xl p-4 mb-4 shadow-sm">
       {/* Header Section */}
-      <View style={styles.headerTop}>
+      <View className="flex-row items-center mb-3">
         <Image
-          source={require("@/assets/images/doc.png")}
-          style={styles.profileImageTop}
+          source={
+            profileImage 
+              ? { uri: profileImage } 
+              : require("../assets/images/doc.png")
+          }
+          className="w-12 h-12 rounded-full"
         />
-        <View style={styles.headerTextTop}>
-          <Text style={styles.nameTop}>{name}</Text>
-          <Text style={styles.specialtyTop}>{specialty}</Text>
+        <View className="flex-1 ml-3">
+          <Text className="text-base font-semibold text-gray-800">{name}</Text>
+          <Text className="text-sm text-gray-500 mt-0.5">{specialty}</Text>
         </View>
-        <View style={styles.ratingContainerTop}>
-          <Text style={styles.heartIconTop}>❤️</Text>
-          <Text style={styles.ratingTop}>{rating}</Text>
+        <View className="flex-row items-center bg-orange-50 px-2 py-1 rounded-xl">
+          <Text className="mr-1">❤️</Text>
+          <Text className="text-sm font-medium text-orange-500">
+            {typeof rating === 'number' ? rating.toFixed(1) : rating}
+          </Text>
         </View>
       </View>
 
       {/* Appointment Details */}
-                    <View style={styles.appointmentDetailsTop}>
-                      <View style={styles.rowTop}>
-                        <Image
-                          source={require("@/assets/images/timer.png")}
-                          style={{ width: 16, height: 16, marginRight: 8 }}
-                        />
-                        <Text style={styles.dateTop}>Monday</Text>
-                        <Text style={styles.dateTop}>Oct 27, 2022</Text>
-                        <Text style={styles.timeTop}>9:00 - 9:30 am</Text>
-                      </View>
-                    </View>
+      <View className="mb-4">
+        <View className="flex-row items-center mb-2">
+          <Image
+            source={require("../assets/images/timer.png")}
+            className="w-4 h-4 mr-2"
+          />
+          {dateInfo ? (
+            <View className="flex-row items-center">
+              <Text className="text-sm text-gray-500 mr-2">{dateInfo.dayName}</Text>
+              <Text className="text-sm text-gray-500 mr-2">{dateInfo.formattedDate}</Text>
+              <Text className="text-sm font-medium text-gray-700">{time}</Text>
+            </View>
+          ) : (
+            <Text className="text-sm text-gray-500">No available slots</Text>
+          )}
+        </View>
+      </View>
 
       {/* Book Appointment Button */}
-      <TouchableOpacity style={styles.buttonTop} onPress={onPress}>
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
+      <TouchableOpacity 
+        className="bg-orange-500 rounded-xl py-3 items-center justify-center"
+        onPress={onPress}
+      >
+        <View className="flex-row items-center">
           <Image
-        source={require("@/assets/images/calender.png")}
-        style={{ width: 24, height: 24, marginRight: 8 }}
+            source={require("../assets/images/calender.png")}
+            className="w-6 h-6 mr-2"
           />
-          <Text style={styles.buttonTextTop}>Book Appointment</Text>
+          <Text className="text-white text-base font-semibold">Book Appointment</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -64,90 +114,3 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
 };
 
 export default DoctorCard;
-
-const styles = StyleSheet.create({
-  cardTop: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    margin: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-  },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  profileImageTop: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 12,
-  },
-  headerTextTop: {
-    flex: 1,
-  },
-  nameTop: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  specialtyTop: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
-  },
-  ratingContainerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  heartIconTop: {
-    fontSize: 16,
-    color: "red",
-    marginRight: 4,
-  },
-  ratingTop: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  appointmentDetailsTop: {
-    backgroundColor: "#E9F4FF",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  rowTop: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconTop: {
-    fontSize: 16,
-    marginRight: 8,
-  },
-  dateTop: {
-    fontSize: 14,
-    color: "#333",
-    marginRight: 12,
-  },
-  timeTop: {
-    fontSize: 14,
-    color: "#333",
-    fontWeight: "bold",
-  },
-  buttonTop: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  buttonTextTop: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#FF6C00",
-  },
-});
