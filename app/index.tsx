@@ -75,7 +75,7 @@ const Index: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://10.0.2.2:3020/login", {
+      const response = await fetch("http://localhost:3020/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
