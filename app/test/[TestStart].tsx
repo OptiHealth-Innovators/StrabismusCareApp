@@ -1,12 +1,12 @@
-import { Stack, router } from 'expo-router';
+import { Link, Stack, router } from 'expo-router';
 import React from 'react';
-import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { Text, Image, View} from 'react-native';
 
 const TestStart = () => {
   // Function to handle navigation to TestChoose
   const handleReadyPress = () => {
-    // router.push('/test/TestChoose')
-    alert("Ready to start the test!");
+    router.push('/test/TestChoose')
+    // alert("Ready to start the test!");
   };
 
   return (
@@ -39,12 +39,12 @@ const TestStart = () => {
         </Text>
 
         {/* Button with navigation */}
-        <TouchableOpacity 
+        <Link
           className="bg-[#FF7900] rounded-full py-3 px-8 mt-12 w-full"
-          onPress={handleReadyPress}
+          href="../components/test-choose"
         >
           <Text className="text-white font-bold text-center">Ready</Text>
-        </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );

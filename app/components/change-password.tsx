@@ -1,184 +1,146 @@
-import React from "react";
+import { Stack } from "expo-router";
+import React, { useState } from "react";
 import {
   View,
   Text,
   TextInput,
   Image,
   TouchableOpacity,
-  StyleSheet,
+  SafeAreaView,
+  Alert,
 } from "react-native";
 
-const ChangePassword: React.FC = ({navigation}: any) => {
-  return (
-    <View style={styles.container}>
-      <View style={styles.topHeader}>
-        <Image
-          style={styles.backArrow}
-          source={require("@/assets/images/back-button.png")}
-        />
-        <Image
-          source={require("@/assets/images/logo-hz.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-      </View>
+const ChangePassword = () => {
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showCreatePassword, setShowCreatePassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-      <View style={styles.content}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Change Password</Text>
-          <Text style={styles.subtitle}>
+  const handleSavePassword = () => {
+      Alert.alert("Success", "Your changes have been saved!");
+    };
+
+  return (
+    <SafeAreaView className="flex-1 bg-white items-center justify-start">
+      <View className="w-4/5 pt-12">
+      <Stack.Screen options={{
+                headerTitle: "",
+                headerTitleAlign: 'center',
+                headerStyle: {
+                  backgroundColor: 'white', // optional, set background color
+      
+                },
+                headerTintColor: '#4338ca',
+                headerBackTitle: "Back",
+              }} />
+        {/* Logo */}
+        <Image
+          source={require("@/assets/images/icon-hz.png")}
+          className="h-10 w-[230px] self-center mb-8"
+        />
+       {/* Header */}
+        <View className="mb-9 items-center w-full">
+          <Text className="text-2xl font-semibold text-[#240046] text-center">
+            Change Password
+          </Text>
+          <Text className="text-sm font-semibold text-[#525a66] mt-1 text-center">
             Create a new, strong password that you don&apos;t use before
           </Text>
         </View>
 
-        <View style={styles.passwordFields}>
-        <View style={styles.textField}>
+        {/* Input Fields */}
+        <View className="mb-6 w-full">
+          <View className="flex-row items-center border border-[#79747e] rounded-lg mb-3 px-4">
             <TextInput
               placeholder="Email"
-              style={styles.input}
+              className="flex-1 h-12 text-base text-[#1c1b1f]"
+              placeholderTextColor="#aaa"
             />
-            </View>
-          {/* Create Password */}
-          <View style={styles.textField}>
+          </View>
+          {/* Current Password */}
+          <View className="flex-row items-center border border-[#79747e] rounded-lg mb-3 px-4">
             <TextInput
               placeholder="Current password"
-              secureTextEntry={true}
-              style={styles.input}
+              secureTextEntry={!showCurrentPassword}
+              className="flex-1 h-12 text-base text-[#1c1b1f]"
+              placeholderTextColor="#aaa"
             />
-            <TouchableOpacity style={styles.eyeIcon}>
+            <TouchableOpacity
+              className="p-3"
+              onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+            >
               <Image
-                source={require("@/assets/images/eye.png")}
-                style={styles.eyeIconImage}
+                source={
+                  showCurrentPassword
+                    ? require("@/assets/images/eye.png") // You might need an eye-off image
+                    : require("@/assets/images/eye.png")
+                }
+                className="w-6 h-6"
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.textField}>
+
+          {/* Create Password */}
+          <View className="flex-row items-center border border-[#79747e] rounded-lg mb-3 px-4">
             <TextInput
               placeholder="Create password"
-              secureTextEntry={true}
-              style={styles.input}
+              secureTextEntry={!showCreatePassword}
+              className="flex-1 h-12 text-base text-[#1c1b1f]"
+              placeholderTextColor="#aaa"
             />
-            <TouchableOpacity style={styles.eyeIcon}>
+            <TouchableOpacity
+              className="p-3"
+              onPress={() => setShowCreatePassword(!showCreatePassword)}
+            >
               <Image
-                source={require("@/assets/images/eye.png")}
-                style={styles.eyeIconImage}
+                source={
+                  showCreatePassword
+                    ? require("@/assets/images/eye.png")  // You might need an eye-off image
+                    : require("@/assets/images/eye.png")
+                }
+                className="w-6 h-6"
               />
             </TouchableOpacity>
           </View>
 
           {/* Confirm Password */}
-          <View style={styles.textField}>
+          <View className="flex-row items-center border border-[#79747e] rounded-lg mb-3 px-4">
             <TextInput
               placeholder="Confirm Password"
-              secureTextEntry={true}
-              style={styles.input}
+              secureTextEntry={!showConfirmPassword}
+              className="flex-1 h-12 text-base text-[#1c1b1f]"
+              placeholderTextColor="#aaa"
             />
-            <TouchableOpacity style={styles.eyeIcon}>
+            <TouchableOpacity
+              className="p-3"
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+            >
               <Image
-                source={require("@/assets/images/eye.png")}
-                style={styles.eyeIconImage}
+                source={
+                  showConfirmPassword
+                    ? require("@/assets/images/eye.png") // You might need an eye-off image
+                    : require("@/assets/images/eye.png")
+                }
+                className="w-6 h-6"
               />
             </TouchableOpacity>
           </View>
-          <Text style={styles.supportingText}>At least 8 characters</Text>
+          <Text className="text-sm text-[#1c1b1f] mt-1">
+            At least 8 characters
+          </Text>
         </View>
 
         {/* Save Password Button */}
-        <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate("Login")}>
-          <Text style={styles.saveButtonText}>Save Password</Text>
+        <TouchableOpacity
+          className="bg-[#ff6d00] rounded-lg items-center justify-center h-12 py-3.75 mt-5 w-full"
+          onPress={handleSavePassword}
+        >
+          <Text className="text-white text-sm font-medium">
+            Save Password
+          </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  topHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    marginTop: 32,
-  },
-  logo: {
-    width: 230,
-    height: 33,
-    marginLeft: 8,
-  },
-  backArrow: {
-    width: 32,
-    height: 32,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 16,
-    marginTop: 34,
-  },
-  header: {
-    marginBottom: 36,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#240046",
-  },
-  subtitle: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#525a66",
-    marginTop: 4,
-  },
-  passwordFields: {
-    marginBottom: 24,
-  },
-  textField: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#79747e",
-    borderRadius: 4,
-    marginBottom: 8,
-    paddingHorizontal: 16,
-  },
-  input: {
-    flex: 1,
-    height: 56,
-    fontSize: 16,
-    color: "#1c1b1f",
-  },
-  eyeIcon: {
-    padding: 12,
-  },
-  eyeIconImage: {
-    width: 24,
-    height: 24,
-  },
-  supportingText: {
-    fontSize: 12,
-    color: "#1c1b1f",
-    marginTop: 4,
-  },
-  saveButton: {
-    position: "absolute",
-    bottom: 20,
-    left: 20, 
-    right: 20,
-    backgroundColor: "#ff6d00",
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 48,
-    padding: 15,
-  },
-  saveButtonText: {
-    color: "#ffffff",
-    fontSize: 14,
-    fontWeight: "500",
-  },
-});
-
 export default ChangePassword;
+

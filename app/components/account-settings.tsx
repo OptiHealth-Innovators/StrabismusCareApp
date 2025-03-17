@@ -26,18 +26,17 @@ const account = () => {
 
   return (
     <View className="flex-1 bg-white p-4">
-      {/* Removed Header Text - Now handled by custom header in _layout.tsx */}
+      
        <Stack.Screen options={{
           headerTitle: "Account Settings",
           headerTitleAlign: 'center',
           headerStyle: {
-            backgroundColor: 'white', // optional, set background color
-
+            backgroundColor: 'white', 
           },
           headerTintColor: '#4338ca',
           headerBackTitle: "Back",
         }} />
-      {/* Profile Picture Section */}
+      
       <TouchableOpacity
         className="items-center mb-6"
         onPress={handleChangeProfilePicture}
@@ -49,7 +48,7 @@ const account = () => {
         <Text className="text-indigo-700 font-semibold">Change Profile Picture</Text>
       </TouchableOpacity>
 
-      {/* Form Fields */}
+      
       <View className="mb-6">
         <Text className="text-sm text-gray-800 mb-1">Name</Text>
         <TextInput
