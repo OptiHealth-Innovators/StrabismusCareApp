@@ -9,12 +9,27 @@ import {
   SafeAreaView,
   ActivityIndicator,
   ImageSourcePropType,
+  Platform,
 } from "react-native";
 import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
-const ENV_BACKEND_URL = Constants.expoConfig?.extra?.BACKEND_URL;
+// Dynamic API URL based on platform and environment
+const getApiUrl = () => {
+  if (__DEV__) {
+    // Development - use environment variables for different platforms
+    if (Platform.OS === 'android') {
+      return Constants.expoConfig?.extra?.ENV_BACKEND_URL_ANDROID || 'http://10.0.2.2:3000';
+    }
+    return Constants.expoConfig?.extra?.ENV_BACKEND_URL_IOS || 'http://localhost:3000';
+  }
+  // Production
+  return Constants.expoConfig?.extra?.BACKEND_URL || 'https://your-production-api.com';
+};
+
+const ENV_BACKEND_URL = getApiUrl();
+console.log("API_BASE_URL: ", ENV_BACKEND_URL);
 
 interface LoginResponse {
   success?: boolean;
@@ -78,10 +93,13 @@ const Index: React.FC = () => {
     setLoading(true);
 
     try {
+      console.log(`Attempting to connect to: ${ENV_BACKEND_URL}/login`);
+      
       const response = await fetch(`${ENV_BACKEND_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Accept": "application/json"
         },
         body: JSON.stringify({
           email: email.trim().toLowerCase(),
@@ -113,11 +131,18 @@ const Index: React.FC = () => {
         });
       }
     } catch (error) {
-      console.error("Login error:", error);
+      // Enhanced error logging
+      const typedError = error as Error;
+      console.error("Login error details:", {
+        message: typedError.message,
+        stack: typedError.stack,
+        name: typedError.name
+      });
+      
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: "Network error, please try again"
+        text1: "Connection Error",
+        text2: `Network error: ${typedError.message}`
       });
     } finally {
       setLoading(false);
@@ -244,70 +269,3 @@ const Index: React.FC = () => {
 };
 
 export default Index;
-
-
-
-// import { signInWithEmailAndPassword } from "firebase/auth";
-// import { getAuth } from 'firebase/auth';
-
-// if (email && password) {
-//   try {
-//     const auth = getAuth();
-//     const userCredential = await signInWithEmailAndPassword(
-//       auth,
-//       email,
-//       password
-//     );
-
-//     const user = userCredential.user;
-//     if (user) {
-//       router.push("/(tabs)");
-//     }
-//   } catch (error) {
-//     const r = error as Error;
-//     const m = r.message;
-//     const errorMessage = m
-//       .replace(/^Firebase: /, "")
-//       .replace(/ \(.+\)\.$/, "")
-//       .trim();
-//     console.log(errorMessage);
-//     Toast.show({
-//       type: "error",
-//       text1: errorMessage,
-//     });
-//   }
-// } else {
-//   // Add error handling or alert if necessary
-//   alert("Please enter valid credentials");
-// }
-
-{/* Divider */ }
-{/* <View className="flex-row items-center mb-4">
-          <View className="flex-1 h-[0.8px] bg-[#e9e9e9]" />
-          <Text className="mx-2 text-sm text-[#525a66] font-semibold">
-            Or Sign in with
-          </Text>
-          <View className="flex-1 h-[0.8px] bg-[#e9e9e9]" />
-        </View> */}
-
-{/* Social Media Buttons */ }
-{/* <View className="flex-row justify-between w-full mt-1">
-          <TouchableOpacity className="flex-1 items-center justify-center mx-1">
-            <Image
-              source={require("../assets/images/google.png")}
-              className="w-8 h-8"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center justify-center mx-1">
-            <Image
-              source={require("../assets/images/facebook.png")}
-              className="w-8 h-8"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity className="flex-1 items-center justify-center mx-1">
-            <Image
-              source={require("../assets/images/apple.png")}
-              className="w-8 h-8"
-            />
-          </TouchableOpacity>
-        </View> */}
