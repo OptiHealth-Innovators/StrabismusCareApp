@@ -366,7 +366,7 @@ interface ApiResponse<T> {
 }
 
 export default function SearchScreen(): JSX.Element {
-  const [userRole, setUserRole] = useState<string>("doctor"); // Default role
+  const [userRole, setUserRole] = useState<string>("patient"); // Default role
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
