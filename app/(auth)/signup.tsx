@@ -10,14 +10,18 @@ import {
   ActivityIndicator,
   ImageSourcePropType,
   Platform,
-  ScrollView
+  ScrollView,
+  Modal
 } from "react-native";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { FontAwesome } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-const ENV_BACKEND_URL = Constants.expoConfig?.extra?.BACKEND_URL;
+
+const ENV_BACKEND_URL = Platform.OS === 'ios' 
+  ? Constants.expoConfig?.extra?.BACKEND_URL_IOS || "http://localhost:3000"
+  : Constants.expoConfig?.extra?.BACKEND_URL_ANDROID || "http://10.0.2.2:3000";
 
 
 interface PasswordRequirement {
@@ -43,6 +47,12 @@ const SignUp: React.FC = () => {
   const [specialization, setSpecialization] = useState<string>("Dentist");
   const [tenure, setTenure] = useState<string>("");
   const [dateOfBirth, setDateOfBirth] = useState<string>("");
+  
+  // iOS Picker modal state
+  const [showRolePicker, setShowRolePicker] = useState<boolean>(false);
+  const [showSpecializationPicker, setShowSpecializationPicker] = useState<boolean>(false);
+  const [tempRole, setTempRole] = useState<string>("");
+  const [tempSpecialization, setTempSpecialization] = useState<string>("Dentist");
 
   interface SaveUserData {
     (userId: string): Promise<void>;
@@ -119,9 +129,25 @@ const SignUp: React.FC = () => {
   };
 
   const handleRoleChange = (value: string): void => {
-    setRole(value);
-    validateRole(value);
-    setShowDoctorFields(value === "doctor");
+    if (Platform.OS === "ios") {
+      setTempRole(value);
+    } else {
+      setRole(value);
+      validateRole(value);
+      setShowDoctorFields(value === "doctor");
+    }
+  };
+  
+  const confirmRoleSelection = (): void => {
+    setRole(tempRole);
+    validateRole(tempRole);
+    setShowDoctorFields(tempRole === "doctor");
+    setShowRolePicker(false);
+  };
+  
+  const confirmSpecializationSelection = (): void => {
+    setSpecialization(tempSpecialization);
+    setShowSpecializationPicker(false);
   };
 
   interface RegisterResponse {
@@ -232,6 +258,9 @@ const SignUp: React.FC = () => {
         };
       }
       
+      // Debug log to verify the URL being used
+      console.log("Making request to:", `${ENV_BACKEND_URL}/register`);
+      
       const response = await fetch(`${ENV_BACKEND_URL}/register`, {
         method: "POST",
         headers: {
@@ -301,304 +330,390 @@ const SignUp: React.FC = () => {
   const logoIcon: ImageSourcePropType = require("../../assets/images/icon-hz.png");
   const calendarIcon: ImageSourcePropType = require("../../assets/images/calender.png");
 
+  // iOS Role Picker Modal
+  const renderRolePickerModal = () => {
+    return (
+      <Modal
+        visible={showRolePicker}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1 }} onTouchEnd={() => setShowRolePicker(false)} />
+          <View style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
+              <TouchableOpacity onPress={() => setShowRolePicker(false)}>
+                <Text style={{ color: '#ff7900', fontSize: 16, fontWeight: '500' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={confirmRoleSelection}>
+                <Text style={{ color: '#ff7900', fontSize: 16, fontWeight: '500' }}>Done</Text>
+              </TouchableOpacity>
+            </View>
+            <Picker
+              selectedValue={tempRole}
+              onValueChange={handleRoleChange}
+              enabled={!loading}
+              itemStyle={{ height: 120, fontSize: 16 }}
+            >
+              <Picker.Item label="Select your role" value="" color="#aaa" />
+              <Picker.Item label="Doctor" value="doctor" />
+              <Picker.Item label="Patient" value="patient" />
+            </Picker>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+  
+  // iOS Specialization Picker Modal
+  const renderSpecializationPickerModal = () => {
+    return (
+      <Modal
+        visible={showSpecializationPicker}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1 }} onTouchEnd={() => setShowSpecializationPicker(false)} />
+          <View style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
+              <TouchableOpacity onPress={() => setShowSpecializationPicker(false)}>
+                <Text style={{ color: '#ff7900', fontSize: 16, fontWeight: '500' }}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={confirmSpecializationSelection}>
+                <Text style={{ color: '#ff7900', fontSize: 16, fontWeight: '500' }}>Done</Text>
+              </TouchableOpacity>
+            </View>
+            <Picker
+              selectedValue={tempSpecialization}
+              onValueChange={(value) => setTempSpecialization(value)}
+              enabled={!loading}
+              itemStyle={{ height: 120, fontSize: 16 }}
+            >
+              <Picker.Item label="Dentist" value="Dentist" />
+              <Picker.Item label="Cardiologist" value="Cardiologist" />
+              <Picker.Item label="Dermatologist" value="Dermatologist" />
+              <Picker.Item label="Pediatrician" value="Pediatrician" />
+              <Picker.Item label="Neurologist" value="Neurologist" />
+              <Picker.Item label="Orthopedist" value="Orthopedist" />
+              <Picker.Item label="Psychiatrist" value="Psychiatrist" />
+              <Picker.Item label="General Practitioner" value="General Practitioner" />
+            </Picker>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <ScrollView className="pt-20 bg-white">
-    <SafeAreaView className="flex-1 bg-white items-center justify-center">
-      <View className="w-4/5">
-        <Image
-          source={logoIcon}
-          className="mt-4 mb-4 h-8 w-[230px] self-center"
-        />
+      <SafeAreaView className="flex-1 bg-white items-center justify-center">
+        <View className="w-4/5">
+          <Image
+            source={logoIcon}
+            className="mt-4 mb-4 h-8 w-[230px] self-center"
+          />
 
-        <View className="mb-8">
-          <Text className="text-2xl text-[#240046] pt-4 font-manrope-semibold text-center">
-            Create a new account
-          </Text>
-        </View>
-
-        <View className="w-full mb-8">
-          <View className="mb-6">
-            <Text className="text-sm text-[#525a66] mb-2 font-normal">
-              Name
+          <View className="mb-8">
+            <Text className="text-2xl text-[#240046] pt-4 font-manrope-semibold text-center">
+              Create a new account
             </Text>
-            <TextInput
-              className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
-              placeholder="Enter your name"
-              placeholderTextColor="#aaa"
-              value={name}
-              onChangeText={setName}
-              editable={!loading}
-              autoCapitalize="words"
-            />
           </View>
 
-          <View className="mb-6">
-            <Text className="text-sm text-[#525a66] mb-2 font-normal">
-              Email
-            </Text>
-            <TextInput
-              className={`border rounded-md px-4 py-3 text-base text-black ${
-                emailError ? "border-red-500" : "border-[#e9e9e9]"
-              }`}
-              placeholder="Enter your email"
-              placeholderTextColor="#aaa"
-              value={email}
-              onChangeText={handleEmailChange}
-              editable={!loading}
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoComplete="email"
-            />
-            {emailError ? (
-              <Text className="text-red-500 text-sm mt-1">{emailError}</Text>
-            ) : null}
-          </View>
-
-          {/* Role Selection */}
-          <View className="mb-6">
-            <Text className="text-sm text-[#525a66] mb-2 font-normal">
-              Role
-            </Text>
-            <View
-              className={`border rounded-md overflow-hidden ${
-                roleError ? "border-red-500" : "border-[#e9e9e9]"
-              }`}
-            >
-              {Platform.OS === "ios" ? (
-                <Picker
-                  selectedValue={role}
-                  onValueChange={handleRoleChange}
-                  enabled={!loading}
-                  style={{ height: 50 }}
-                  itemStyle={{ fontSize: 16 }}
-                >
-                  <Picker.Item
-                    label="Select your role"
-                    value=""
-                    enabled={false}
-                    color="#aaa"
-                  />
-                  <Picker.Item label="Doctor" value="doctor" />
-                  <Picker.Item label="Patient" value="patient" />
-                </Picker>
-              ) : (
-                <Picker
-                  selectedValue={role}
-                  onValueChange={handleRoleChange}
-                  enabled={!loading}
-                  style={{ height: 50 }}
-                  mode="dropdown"
-                  itemStyle={{ fontSize: 16 }}
-                >
-                  <Picker.Item
-                    label="Select your role"
-                    value=""
-                    enabled={false}
-                    color="#aaa"
-                  />
-                  <Picker.Item label="Doctor" value="doctor" />
-                  <Picker.Item label="Patient" value="patient" />
-                </Picker>
-              )}
+          <View className="w-full mb-8">
+            <View className="mb-6">
+              <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                Name
+              </Text>
+              <TextInput
+                className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
+                placeholder="Enter your name"
+                placeholderTextColor="#aaa"
+                value={name}
+                onChangeText={setName}
+                editable={!loading}
+                autoCapitalize="words"
+              />
             </View>
-            {roleError ? (
-              <Text className="text-red-500 text-sm mt-1">{roleError}</Text>
-            ) : null}
-          </View>
 
-          {/* Doctor-specific fields */}
-          {showDoctorFields && (
-            <>
-              {/* Contact Information */}
-              <View className="mb-6">
-                <Text className="text-sm text-[#525a66] mb-2 font-normal">
-                  Contact
-                </Text>
-                <TextInput
-                  className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
-                  placeholder="(555) 555-1234"
-                  placeholderTextColor="#aaa"
-                  value={contact}
-                  onChangeText={setContact}
-                  editable={!loading}
-                  keyboardType="phone-pad"
-                />
-              </View>
-              
-              {/* Address */}
-              <View className="mb-6">
-                <Text className="text-sm text-[#525a66] mb-2 font-normal">
-                  Address
-                </Text>
-                <TextInput
-                  className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
-                  placeholder="Enter your address"
-                  placeholderTextColor="#aaa"
-                  value={address}
-                  onChangeText={setAddress}
-                  editable={!loading}
-                />
-              </View>
-              
-              {/* Specialization */}
-              <View className="mb-6">
-                <Text className="text-sm text-[#525a66] mb-2 font-normal">
-                  Specialization
-                </Text>
-                <View className="border border-[#e9e9e9] rounded-md overflow-hidden">
+            <View className="mb-6">
+              <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                Email
+              </Text>
+              <TextInput
+                className={`border rounded-md px-4 py-3 text-base text-black ${
+                  emailError ? "border-red-500" : "border-[#e9e9e9]"
+                }`}
+                placeholder="Enter your email"
+                placeholderTextColor="#aaa"
+                value={email}
+                onChangeText={handleEmailChange}
+                editable={!loading}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoComplete="email"
+              />
+              {emailError ? (
+                <Text className="text-red-500 text-sm mt-1">{emailError}</Text>
+              ) : null}
+            </View>
+
+            {/* Role Selection */}
+            <View className="mb-6">
+              <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                Role
+              </Text>
+              {Platform.OS === "ios" ? (
+                <TouchableOpacity
+                  className={`border rounded-md px-4 py-3 ${
+                    roleError ? "border-red-500" : "border-[#e9e9e9]"
+                  }`}
+                  onPress={() => setShowRolePicker(true)}
+                  disabled={loading}
+                >
+                  <Text className={`text-base ${role ? "text-black" : "text-[#aaa]"}`}>
+                    {role || "Select your role"}
+                  </Text>
+                </TouchableOpacity>
+              ) : (
+                <View
+                  className={`border rounded-md overflow-hidden ${
+                    roleError ? "border-red-500" : "border-[#e9e9e9]"
+                  }`}
+                >
                   <Picker
-                    selectedValue={specialization}
-                    onValueChange={(value) => setSpecialization(value)}
+                    selectedValue={role}
+                    onValueChange={handleRoleChange}
                     enabled={!loading}
                     style={{ height: 50 }}
-                    itemStyle={{ fontSize: 16 }}
+                    mode="dropdown"
                   >
-                    <Picker.Item label="Dentist" value="Dentist" />
-                    <Picker.Item label="Cardiologist" value="Cardiologist" />
-                    <Picker.Item label="Dermatologist" value="Dermatologist" />
-                    <Picker.Item label="Pediatrician" value="Pediatrician" />
-                    <Picker.Item label="Neurologist" value="Neurologist" />
-                    <Picker.Item label="Orthopedist" value="Orthopedist" />
-                    <Picker.Item label="Psychiatrist" value="Psychiatrist" />
-                    <Picker.Item label="General Practitioner" value="General Practitioner" />
+                    <Picker.Item
+                      label="Select your role"
+                      value=""
+                      enabled={false}
+                      color="#aaa"
+                    />
+                    <Picker.Item label="Doctor" value="doctor" />
+                    <Picker.Item label="Patient" value="patient" />
                   </Picker>
                 </View>
-              </View>
-              
-              {/* Practicing Tenure */}
-              <View className="mb-6">
-                <Text className="text-sm text-[#525a66] mb-2 font-normal">
-                  Practicing tenure
-                </Text>
-                <TextInput
-                  className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
-                  placeholder="e.g., 5 years"
-                  placeholderTextColor="#aaa"
-                  value={tenure}
-                  onChangeText={setTenure}
-                  editable={!loading}
-                />
-              </View>
-              
-              {/* Date of Birth */}
-              <View className="mb-6">
-                <Text className="text-sm text-[#525a66] mb-2 font-normal">
-                  Date of Birth
-                </Text>
-                <View className="relative">
+              )}
+              {roleError ? (
+                <Text className="text-red-500 text-sm mt-1">{roleError}</Text>
+              ) : null}
+            </View>
+
+            {/* Doctor-specific fields */}
+            {showDoctorFields && (
+              <>
+                {/* Contact Information */}
+                <View className="mb-6">
+                  <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                    Contact
+                  </Text>
                   <TextInput
                     className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
-                    placeholder="DD MMM YYYY (e.g., 17 Aug 1993)"
+                    placeholder="(555) 555-1234"
                     placeholderTextColor="#aaa"
-                    value={dateOfBirth}
-                    onChangeText={setDateOfBirth}
+                    value={contact}
+                    onChangeText={setContact}
                     editable={!loading}
-                  />
-                  <Image
-                    source={calendarIcon}
-                    className="absolute right-3 top-3 w-6 h-6"
+                    keyboardType="phone-pad"
                   />
                 </View>
-              </View>
-            </>
-          )}
-
-          <View className="mb-6 relative">
-            <Text className="text-sm text-[#525a66] mb-2 font-normal">
-              Password
-            </Text>
-            <TextInput
-              className={`border rounded-md px-4 py-3 text-base text-black ${
-                passwordErrors.length > 0
-                  ? "border-red-500"
-                  : "border-[#e9e9e9]"
-              }`}
-              placeholder="Enter your password"
-              placeholderTextColor="#aaa"
-              value={password}
-              onChangeText={handlePasswordChange}
-              editable={!loading}
-              secureTextEntry={!isPasswordVisible}
-              autoCapitalize="none"
-            />
-            <TouchableOpacity
-              onPress={() => setIsPasswordVisible(!isPasswordVisible)}
-              className="absolute right-3 top-10"
-              disabled={loading}
-            >
-              <Image
-                className="w-6 h-6"
-                source={eyeIcon}
-                style={{ opacity: loading ? 0.5 : 1 }}
-              />
-            </TouchableOpacity>
-
-            {/* Password requirements */}
-            {password.length > 0 && (
-              <View className="mt-2">
-                <Text className="text-sm text-[#525a66] mb-1">
-                  Password must contain:
-                </Text>
-                {passwordRequirements.map((requirement, index) => (
-                  <View key={index} className="flex-row items-center">
-                    <Text
-                      className={`text-sm ${
-                        requirement.test.test(password)
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
+                
+                {/* Address */}
+                <View className="mb-6">
+                  <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                    Address
+                  </Text>
+                  <TextInput
+                    className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
+                    placeholder="Enter your address"
+                    placeholderTextColor="#aaa"
+                    value={address}
+                    onChangeText={setAddress}
+                    editable={!loading}
+                  />
+                </View>
+                
+                {/* Specialization */}
+                <View className="mb-6">
+                  <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                    Specialization
+                  </Text>
+                  {Platform.OS === "ios" ? (
+                    <TouchableOpacity
+                      className="border border-[#e9e9e9] rounded-md px-4 py-3"
+                      onPress={() => setShowSpecializationPicker(true)}
+                      disabled={loading}
                     >
-                      {requirement.test.test(password) ? "✓" : "×"}{" "}
-                      {requirement.text}
-                    </Text>
+                      <Text className="text-base text-black">
+                        {specialization}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View className="border border-[#e9e9e9] rounded-md overflow-hidden">
+                      <Picker
+                        selectedValue={specialization}
+                        onValueChange={(value) => setSpecialization(value)}
+                        enabled={!loading}
+                        style={{ height: 50 }}
+                        mode="dropdown"
+                      >
+                        <Picker.Item label="Dentist" value="Dentist" />
+                        <Picker.Item label="Cardiologist" value="Cardiologist" />
+                        <Picker.Item label="Dermatologist" value="Dermatologist" />
+                        <Picker.Item label="Pediatrician" value="Pediatrician" />
+                        <Picker.Item label="Neurologist" value="Neurologist" />
+                        <Picker.Item label="Orthopedist" value="Orthopedist" />
+                        <Picker.Item label="Psychiatrist" value="Psychiatrist" />
+                        <Picker.Item label="General Practitioner" value="General Practitioner" />
+                      </Picker>
+                    </View>
+                  )}
+                </View>
+                
+                {/* Practicing Tenure */}
+                <View className="mb-6">
+                  <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                    Practicing tenure
+                  </Text>
+                  <TextInput
+                    className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
+                    placeholder="e.g., 5 years"
+                    placeholderTextColor="#aaa"
+                    value={tenure}
+                    onChangeText={setTenure}
+                    editable={!loading}
+                  />
+                </View>
+                
+                {/* Date of Birth */}
+                <View className="mb-6">
+                  <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                    Date of Birth
+                  </Text>
+                  <View className="relative">
+                    <TextInput
+                      className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
+                      placeholder="DD MMM YYYY (e.g., 17 Aug 1993)"
+                      placeholderTextColor="#aaa"
+                      value={dateOfBirth}
+                      onChangeText={setDateOfBirth}
+                      editable={!loading}
+                    />
+                    <Image
+                      source={calendarIcon}
+                      className="absolute right-3 top-3 w-6 h-6"
+                    />
                   </View>
-                ))}
-              </View>
+                </View>
+              </>
             )}
+
+            <View className="mb-6 relative">
+              <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                Password
+              </Text>
+              <TextInput
+                className={`border rounded-md px-4 py-3 text-base text-black ${
+                  passwordErrors.length > 0
+                    ? "border-red-500"
+                    : "border-[#e9e9e9]"
+                }`}
+                placeholder="Enter your password"
+                placeholderTextColor="#aaa"
+                value={password}
+                onChangeText={handlePasswordChange}
+                editable={!loading}
+                secureTextEntry={!isPasswordVisible}
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+                className="absolute right-3 top-10"
+                disabled={loading}
+              >
+                <Image
+                  className="w-6 h-6"
+                  source={eyeIcon}
+                  style={{ opacity: loading ? 0.5 : 1 }}
+                />
+              </TouchableOpacity>
+
+              {/* Password requirements */}
+              {password.length > 0 && (
+                <View className="mt-2">
+                  <Text className="text-sm text-[#525a66] mb-1">
+                    Password must contain:
+                  </Text>
+                  {passwordRequirements.map((requirement, index) => (
+                    <View key={index} className="flex-row items-center">
+                      <Text
+                        className={`text-sm ${
+                          requirement.test.test(password)
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        {requirement.test.test(password) ? "✓" : "×"}{" "}
+                        {requirement.text}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </View>
+
+            <TouchableOpacity
+              className={`bg-[#ff7900] py-3 items-center rounded mb-4 ${
+                loading || passwordErrors.length > 0 || !!emailError || !role
+                  ? "opacity-50"
+                  : ""
+              }`}
+              onPress={createAccount}
+              disabled={
+                loading || passwordErrors.length > 0 || !!emailError || !role
+              }
+            >
+              {loading ? (
+                <View className="flex-row items-center">
+                  <ActivityIndicator color="white" style={{ marginRight: 8 }} />
+                  <Text className="text-lg text-white font-manrope-medium">
+                    Creating account...
+                  </Text>
+                </View>
+              ) : (
+                <Text className="text-lg text-white font-manrope-medium">
+                  Sign up
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            className={`bg-[#ff7900] py-3 items-center rounded mb-4 ${
-              loading || passwordErrors.length > 0 || !!emailError || !role
-                ? "opacity-50"
-                : ""
-            }`}
-            onPress={createAccount}
-            disabled={
-              loading || passwordErrors.length > 0 || !!emailError || !role
-            }
-          >
-            {loading ? (
-              <View className="flex-row items-center">
-                <ActivityIndicator color="white" style={{ marginRight: 8 }} />
-                <Text className="text-lg text-white font-manrope-medium">
-                  Creating account...
-                </Text>
-              </View>
-            ) : (
-              <Text className="text-lg text-white font-manrope-medium">
-                Sign up
-              </Text>
-            )}
-          </TouchableOpacity>
-        </View>
-
-        <View className="flex-row justify-center mb-40">
-          <Text className="text-lg text-[#525a66] text-center font-manrope-regular font-[800]">
-            Already have an account?{" "}
-          </Text>
-          <TouchableOpacity onPress={() => router.push("/")} disabled={loading}>
-            <Text
-              className={`text-lg text-[#ff7900] font-manrope-regular font-[800] ${
-                loading ? "opacity-50" : ""
-              }`}
-            >
-              Sign in
+          <View className="flex-row justify-center mb-40">
+            <Text className="text-lg text-[#525a66] text-center font-manrope-regular font-[800]">
+              Already have an account?{" "}
             </Text>
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/")} disabled={loading}>
+              <Text
+                className={`text-lg text-[#ff7900] font-manrope-regular font-[800] ${
+                  loading ? "opacity-50" : ""
+                }`}
+              >
+                Sign in
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-      <Toast />
+        
+        {/* iOS Picker Modals */}
+        {renderRolePickerModal()}
+        {renderSpecializationPickerModal()}
+        
+        <Toast />
       </SafeAreaView>
     </ScrollView>
   );

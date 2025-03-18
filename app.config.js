@@ -56,7 +56,8 @@ export default {
       eas: {
         projectId: "93482b66-8399-4824-be0c-8f4f0a203275"
       },
-      BACKEND_URL: process.env.BACKEND_URL
+      BACKEND_URL_IOS: process.env.ENV_BACKEND_URL_IOS || "http://localhost:3000",
+      BACKEND_URL_ANDROID: process.env.ENV_BACKEND_URL_ANDROID || "http://10.0.2.2:3000"
     }
   }
 };
