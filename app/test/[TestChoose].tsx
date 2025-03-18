@@ -97,7 +97,7 @@ export default function TestChoose() {
                 {/* Modal/Popup - Only shown when modalVisible is true */}
                 {modalVisible && (
                     <TouchableWithoutFeedback onPress={(e) => e.stopPropagation()}>
-                        <View style={styles.modalContainer} className="absolute bottom-0 left-0 right-0">
+                        <View className="absolute bottom-0 left-0 right-0">
                             <View className="bg-white rounded-t-3xl px-6 py-6">
                                 <Text className="text-lg font-bold mb-4">Add a record</Text>
 
@@ -137,9 +137,6 @@ export default function TestChoose() {
 
 const styles = StyleSheet.create({
     mainContent: {
-        backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent black for blur placeholder
-    },
-    modalContainer: {
-        // No additional styles needed here, Tailwind handles positioning
-    },
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    }
 });
