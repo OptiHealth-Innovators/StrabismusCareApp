@@ -49,7 +49,7 @@ const Dashboard: React.FC = () => {
 
             <Image
               source={require("@/assets/images/doc-f.png")}
-              className="w-40 h-40 rounded-lg -ml-10 -mb-5"
+              className="w-36 h-44 rounded-lg -ml-10 -mb-5"
             />
           </View>
         </View>

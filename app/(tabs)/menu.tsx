@@ -78,7 +78,7 @@ const MenuScreen: React.FC = () => {
       <View className="mt-8">
         <MenuItem
           title="Account Settings"
-          href="../components/account-settings" // <--  Correct route!
+          href="../components/account-settings"
           icon={<Feather name="settings" size={24} color="#FF7900" />}
         />
         <MenuItem
@@ -89,7 +89,7 @@ const MenuScreen: React.FC = () => {
         <MenuItem
           title="Help Center"
           icon={<MaterialIcons name="help-outline" size={24} color="#FF7900" />}
-          externalUrl="https://example.com/help"
+          externalUrl="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         />
         <MenuItem
           title="Terms & Conditions"
