@@ -1,17 +1,132 @@
 import { MaterialIcons, FontAwesome, Feather } from "@expo/vector-icons";
 import DoctorCard from "@/components/DoctorCard";
 import HealthArticle from "@/components/HealthArticle";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Testes from "@/components/Testes";
-import { View, Text, Image, ScrollView, TouchableOpacity } from "react-native";
-import Tests from "@/components/Testes";
-import { Link } from "expo-router";
-
-const handleBookAppointment = () => {
-  alert("Appointment Booked");
-};
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Link, useRouter } from "expo-router";
+import { doctorService } from "@/services/api/doctorService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Dashboard: React.FC = () => {
+  const router = useRouter();
+  const [userRole, setUserRole] = useState<string>("patient"); // Default to patient
+  const [topDoctors, setTopDoctors] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Check user role on component mount
+  useEffect(() => {
+    checkUserRole();
+  }, []);
+
+  // Fetch top doctors if user is a patient
+  useEffect(() => {
+    if (userRole === "patient") {
+      fetchTopDoctors();
+    }
+  }, [userRole]);
+
+  const checkUserRole = async () => {
+    try {
+      const userDataString = await AsyncStorage.getItem("userData");
+      if (userDataString) {
+        const userData = JSON.parse(userDataString);
+        if (userData && userData.role) {
+          setUserRole(userData.role);
+          console.log("User role set to:", userData.role);
+        }
+      }
+    } catch (error) {
+      console.error("Error retrieving user role:", error);
+    }
+  };
+
+  // Function to fetch with retry logic
+  const fetchWithRetry = async (fetchFunction, maxRetries = 3) => {
+    let retries = 0;
+    
+    while (retries < maxRetries) {
+      try {
+        return await fetchFunction();
+      } catch (error) {
+        retries++;
+        if (retries === maxRetries) {
+          throw error;
+        }
+        // Wait for a bit before retrying (exponential backoff)
+        await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retries)));
+      }
+    }
+    
+    throw new Error("Unexpected error in fetchWithRetry");
+  };
+
+  const fetchTopDoctors = async () => {
+    try {
+      setLoading(true);
+      console.log("Fetching top doctors...");
+      
+      // Check if doctorService exists and has getAllDoctors method
+      if (doctorService && typeof doctorService.getAllDoctors === 'function') {
+        const response = await fetchWithRetry(() => doctorService.getAllDoctors());
+        
+        if (response && response.data) {
+          let doctors = [];
+          
+          if (Array.isArray(response.data)) {
+            doctors = response.data;
+          } else if (typeof response.data === 'object') {
+            // Some APIs nest the array in a property
+            const possibleArrays = Object.values(response.data).filter(val => Array.isArray(val));
+            if (possibleArrays.length > 0) {
+              doctors = possibleArrays[0];
+            } else {
+              console.warn("Response data is an object but contains no arrays");
+            }
+          } else {
+            console.warn("Unexpected response data format:", typeof response.data);
+          }
+          
+          // Sort by rating (highest first) and take the top N
+          const topN = doctors
+            .sort((a, b) => b.rating - a.rating)
+            .slice(0, 5); // Show top 5 doctors
+            
+          setTopDoctors(topN);
+          console.log("Top doctors set, count:", topN.length);
+        } else {
+          console.warn("No response data received");
+        }
+      } else {
+        console.error("Doctor service is not properly initialized");
+        setError("Service initialization error. Please restart the app.");
+      }
+      
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch top doctors:", err);
+      setError("Failed to fetch doctors. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBookAppointment = (doctorId) => {
+    alert(`Appointment Booked with doctor ID: ${doctorId || 'unknown'}`);
+  };
+
+  // New function to navigate to the search screen
+  const navigateToAllDoctors = () => {
+    router.push({
+      pathname: "/(tabs)/search",
+      params: { 
+        showAllDoctors: true,
+        fromDashboard: true
+      }
+    });
+  };
+
   return (
     <View className="flex-1 bg-[#2E004F]">
       <ScrollView className="pt-4 mb-16">
@@ -60,38 +175,76 @@ const Dashboard: React.FC = () => {
             <Testes />
           </View>
 
-          {/* Top Doctors Section */}
-          <View className="flex-row justify-between items-center mb-4 mt-2">
-            <Text className="text-lg  font-bold text-[#333333]">
-              Top Doctors
-            </Text>
-            {/* <TouchableOpacity>
-              <Text className="text-[#FF7900] font-[16] pr-6">See All</Text>
-            </TouchableOpacity> */}
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mb-4"
-          >
-            <DoctorCard
-              name="Dr. John Tauhid"
-              specialty="Cardiologist"
-              rating={4.8}
-              date="16th Jan 2025"
-              time="10:30 AM"
-              onPress={handleBookAppointment}
-            />
-
-            <DoctorCard
-              name="Dr. John Doe"
-              specialty="Cardiologist"
-              rating={4.8}
-              date="16th Jan 2025"
-              time="10:30 AM"
-              onPress={handleBookAppointment}
-            />
-          </ScrollView>
+          {/* Top Doctors Section - Only show for patients */}
+          {userRole === "patient" && (
+            <>
+              <View className="flex-row justify-between items-center mb-4 mt-2">
+                <Text className="text-lg font-bold text-[#333333]">
+                  Top Doctors
+                </Text>
+                <TouchableOpacity onPress={navigateToAllDoctors}>
+                  <Text className="text-[#FF7900] font-[16] pr-6">See All</Text>
+                </TouchableOpacity>
+              </View>
+              
+              {loading ? (
+                <View className="h-20 justify-center items-center">
+                  <ActivityIndicator size="small" color="#FF7900" />
+                </View>
+              ) : error ? (
+                <View className="h-20 justify-center items-center">
+                  <Text className="text-red-500 p-2">{error}</Text>
+                  <TouchableOpacity 
+                    className="mt-2 bg-orange-500 px-3 py-1 rounded-lg"
+                    onPress={fetchTopDoctors}
+                  >
+                    <Text className="text-white">Retry</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  className="mb-4"
+                >
+                  {topDoctors && topDoctors.length > 0 ? (
+                    topDoctors.map((doctor) => (
+                      <DoctorCard
+                        key={doctor._id || `temp-${Math.random()}`}
+                        name={doctor.name || "Unknown Doctor"}
+                        specialty={doctor.specialty || "General Practice"}
+                        rating={doctor.rating || 0}
+                        date={doctor.availableSlots?.[0]?.date || "No available slots"}
+                        time={doctor.availableSlots?.[0]?.slots?.[0]?.startTime || ""}
+                        onPress={() => handleBookAppointment(doctor._id)}
+                        profileImage={doctor.profileImage}
+                      />
+                    ))
+                  ) : (
+                    // Fallback to static data if no doctors are available from API
+                    <>
+                      <DoctorCard
+                        name="Dr. John Tauhid"
+                        specialty="Cardiologist"
+                        rating={4.8}
+                        date="16th Jan 2025"
+                        time="10:30 AM"
+                        onPress={() => handleBookAppointment("fallback1")}
+                      />
+                      <DoctorCard
+                        name="Dr. John Doe"
+                        specialty="Cardiologist"
+                        rating={4.8}
+                        date="16th Jan 2025"
+                        time="10:30 AM"
+                        onPress={() => handleBookAppointment("fallback2")}
+                      />
+                    </>
+                  )}
+                </ScrollView>
+              )}
+            </>
+          )}
 
           <HealthArticle />
 
@@ -141,94 +294,3 @@ const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-
-// import { useState } from 'react';
-// import {
-// 	Text,
-// 	View,
-// 	StyleSheet,
-// 	KeyboardAvoidingView,
-// 	TextInput,
-// 	Button,
-// 	ActivityIndicator
-// } from 'react-native';
-// import auth from '@react-native-firebase/auth';
-// import { FirebaseError } from 'firebase/app';
-// import React from 'react';
-
-// export default function Index() {
-// 	const [email, setEmail] = useState('');
-// 	const [password, setPassword] = useState('');
-// 	const [loading, setLoading] = useState(false);
-
-// 	const signUp = async () => {
-// 		setLoading(true);
-// 		try {
-// 			await auth().createUserWithEmailAndPassword(email, password);
-// 			alert('Check your emails!');
-// 		} catch (e: any) {
-// 			const err = e as FirebaseError;
-// 			alert('Registration failed: ' + err.message);
-// 		} finally {
-// 			setLoading(false);
-// 		}
-// 	};
-
-// 	const signIn = async () => {
-// 		setLoading(true);
-// 		try {
-// 			await auth().signInWithEmailAndPassword(email, password);
-// 		} catch (e: any) {
-// 			const err = e as FirebaseError;
-// 			alert('Sign in failed: ' + err.message);
-// 		} finally {
-// 			setLoading(false);
-// 		}
-// 	};
-
-// 	return (
-// 		<View style={styles.container}>
-// 			<KeyboardAvoidingView behavior="padding">
-// 				<TextInput
-// 					style={styles.input}
-// 					value={email}
-// 					onChangeText={setEmail}
-// 					autoCapitalize="none"
-// 					keyboardType="email-address"
-// 					placeholder="Email"
-// 				/>
-// 				<TextInput
-// 					style={styles.input}
-// 					value={password}
-// 					onChangeText={setPassword}
-// 					secureTextEntry
-// 					placeholder="Password"
-// 				/>
-// 				{loading ? (
-// 					<ActivityIndicator size={'small'} style={{ margin: 28 }} />
-// 				) : (
-// 					<>
-// 						<Button onPress={signIn} title="Login" />
-// 						<Button onPress={signUp} title="Create account" />
-// 					</>
-// 				)}
-// 			</KeyboardAvoidingView>
-// 		</View>
-// 	);
-// }
-
-// const styles = StyleSheet.create({
-// 	container: {
-// 		marginHorizontal: 20,
-// 		flex: 1,
-// 		justifyContent: 'center'
-// 	},
-// 	input: {
-// 		marginVertical: 4,
-// 		height: 50,
-// 		borderWidth: 1,
-// 		borderRadius: 4,
-// 		padding: 10,
-// 		backgroundColor: '#fff'
-// 	}
-// });

@@ -1,254 +1,3 @@
-// const fetchDoctors = async (): Promise<void> => {
-//   try {
-//     setLoading(true);
-//     console.log("Fetching doctors...");
-    
-//     // Check if doctorService exists and has getAllDoctors method
-//     if (doctorService && typeof doctorService.getAllDoctors === 'function') {
-//       const response = await fetchWithRetry(() => doctorService.getAllDoctors());
-      
-//       if (response && response.data) {
-//         if (Array.isArray(response.data)) {
-//           setDoctors(response.data);
-//         } else if (typeof response.data === 'object') {
-//           // Some APIs nest the array in a property
-//           const possibleArrays = Object.values(response.data).filter(val => Array.isArray(val));
-//           if (possibleArrays.length > 0) {
-//             setDoctors(possibleArrays[0] as Doctor[]);
-//           } else {
-//             console.warn("Response data is an object but contains no arrays");
-//             setDoctors([]);
-//           }
-//         } else {
-//           console.warn("Unexpected response data format:", typeof response.data);
-//           setDoctors([]);
-//         }
-//       } else {
-//         console.warn("No response data received");
-//         setDoctors([]);
-//       }
-//     } else {
-//       console.error("Doctor service is not properly initialized");
-//       setError("Service initialization error. Please restart the app.");
-//       setDoctors([]);
-//     }
-    
-//     setError(null);
-//   } catch (err) {
-//     console.error("Failed to fetch doctors:", err);
-//     setError("Failed to fetch doctors. Please try again.");
-//     setDoctors([]);
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-// // Transform patient data from MongoDB format to the format expected by PatientCard
-// const transformPatients = (patientsData: any[]): Patient[] => {
-//   return patientsData.map(patient => {
-//     const medications = patient.medications ? patient.medications.map((med: any) => {
-//       if (med.name && med.dosage && med.frequency) {
-//         return med;
-//       }
-//       // Otherwise, try to parse it (assuming it might be a string or different format)
-//       return {
-//         name: typeof med === 'string' ? med : 'Unknown medication',
-//         dosage: 'As prescribed',
-//         frequency: 'As directed'
-//       };
-//     }) : [];
-
-//     // Extract medical history
-//     const medicalHistory = Array.isArray(patient.medicalHistory) 
-//       ? patient.medicalHistory 
-//       : [];
-
-//     // Extract allergies
-//     const allergies = Array.isArray(patient.allergies)
-//       ? patient.allergies
-//       : [];
-
-//     // Return the transformed patient object
-//     return {
-//       _id: patient._id || `temp-${Math.random()}`,
-//       name: patient.name || 'Unknown Patient',
-//       age: patient.age || 0,
-//       gender: patient.gender || 'Unknown',
-//       medicalHistory: medicalHistory,
-//       allergies: allergies,
-//       medications: medications,
-//       lastVisit: patient.lastVisit || (patient.vitals && patient.vitals.lastVisit),
-//       upcomingAppointment: patient.upcomingAppointment || (patient.vitals && patient.vitals.upcomingAppointment),
-//       bloodType: patient.bloodType || (patient.vitals && patient.vitals.bloodType),
-//       profileImage: patient.profileImage || null,
-//       vitals: patient.vitals || null,
-//       contact: patient.contact || null,
-//       insuranceInfo: patient.insuranceInfo || null,
-//       emergencyContact: patient.emergencyContact || null,
-//       notes: patient.notes || '',
-//       status: patient.status || 'Unknown',
-//       updatedAt: patient.updatedAt || ''
-//     };
-//   });
-// };
-
-// const fetchPatients = async (): Promise<void> => {
-//   try {
-//     setLoading(true);
-//     console.log("Fetching patients...");
-    
-//     if (patientService && typeof patientService.getAllPatients === 'function') {
-//       const response = await fetchWithRetry(() => patientService.getAllPatients());
-    
-//       if (response && response.data) {
-//         if (response.data.data && Array.isArray(response.data.data)) {
-//           setPatients(transformPatients(response.data.data));
-//           console.log("Patients set from response.data.data, length:", response.data.data.length);
-//           setError(null);
-//           setLoading(false);
-//           return;
-//         } 
-//         else if (Array.isArray(response.data)) {
-//           setPatients(transformPatients(response.data));
-//           console.log("Patients set from response.data array, length:", response.data.length);
-//           setError(null);
-//           setLoading(false);
-//           return; 
-//         } 
-//         else if (response.data.success && Array.isArray(response.data.data)) {
-//           setPatients(transformPatients(response.data.data));
-//           console.log("Patients set from response.data.success.data, length:", response.data.data.length);
-//           setError(null);
-//           setLoading(false);
-//           return; 
-//         } else {
-//           console.warn("Unexpected response format");
-//           setPatients([]);
-//         }
-//       }
-//     } else {
-//       console.error("Patient service is not properly initialized");
-//       setError("Service initialization error. Please restart the app.");
-//       setPatients([]);
-      
-//       Alert.alert(
-//         "Service Initialization Issue",
-//         "Patient service is not properly initialized. Please restart the app or contact support.",
-//         [{ text: "OK" }]
-//       );
-//     }
-    
-//     setError(null);
-//   } catch (err) {
-//     console.error("Failed to fetch patients:", err);
-//     setError("Failed to fetch patients. Please try again.");
-//     setPatients([]);
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-// // Enhanced search functionality
-// const handleSearch = async (): Promise<void> => {
-//   try {
-//     setLoading(true);
-  
-//     if (userRole === "doctor") {
-//       try {
-//         if (patientService && typeof patientService.searchPatients === 'function') {
-//           const searchParams: SearchParams = {
-//             name: searchQuery,
-//             medicalHistory: searchQuery, 
-//           };
-//           const response = await patientService.searchPatients(searchParams);
-        
-//           if (response && response.data) {
-//             if (response.data.data && Array.isArray(response.data.data)) {
-//               setPatients(transformPatients(response.data.data));
-//             } else if (Array.isArray(response.data)) {
-//               setPatients(transformPatients(response.data));
-//             } else if (response.data.success && Array.isArray(response.data.data)) {
-//               setPatients(transformPatients(response.data.data));
-//             } else {
-//               console.warn("Invalid search response format");
-//             }
-//           }
-//         } else {
-//           console.error("Patient search service is not properly initialized");
-//           if (patients.length > 0) {
-//             const filteredPatients = patients.filter(patient => 
-//               patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//               (patient.medicalHistory && patient.medicalHistory.some(
-//                 condition => condition.toLowerCase().includes(searchQuery.toLowerCase())
-//               ))
-//             );
-//             setPatients(filteredPatients);
-//             console.log("Fallback to client-side filtering, results:", filteredPatients.length);
-//           }
-//         }
-//       } catch (searchError) {
-//         console.error("Search API error:", searchError);
-//         if (patients.length > 0) {
-//           const filteredPatients = patients.filter(patient => 
-//             patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//             (patient.medicalHistory && patient.medicalHistory.some(
-//               condition => condition.toLowerCase().includes(searchQuery.toLowerCase())
-//             ))
-//           );
-//           setPatients(filteredPatients);
-//           console.log("Fallback to client-side filtering, results:", filteredPatients.length);
-//         }
-//       }
-//     } else {
-//       try {
-//         if (doctorService && typeof doctorService.searchDoctors === 'function') {
-//           const searchParams: SearchParams = {
-//             name: searchQuery,
-//             specialty: specialty,
-//           };
-//           const response = await doctorService.searchDoctors(searchParams);
-          
-//           if (response && response.data && Array.isArray(response.data)) {
-//             setDoctors(response.data);
-//             console.log("Search results set, count:", response.data.length);
-//           } else {
-//             console.warn("Invalid search response format");
-//           }
-//         } else {
-//           console.error("Doctor search service is not properly initialized");
-          
-//           if (doctors.length > 0) {
-//             const filteredDoctors = doctors.filter(doctor => 
-//               doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//               (doctor.specialty && doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase()))
-//             );
-//             setDoctors(filteredDoctors);
-//             console.log("Fallback to client-side filtering, results:", filteredDoctors.length);
-//           }
-//         }
-//       } catch (searchError) {
-//         console.error("Search API error:", searchError);
-//         if (doctors.length > 0) {
-//           const filteredDoctors = doctors.filter(doctor => 
-//             doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-//             (doctor.specialty && doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase()))
-//           );
-//           setDoctors(filteredDoctors);
-//           console.log("Fallback to client-side filtering, results:", filteredDoctors.length);
-//         }
-//       }
-//     }
-    
-//     setError(null);
-//   } catch (err) {
-//     console.error("Search failed:", err);
-//     setError("Search failed. Please try again.");
-//   } finally {
-//     setLoading(false);
-//   }
-// };
-
-
 // app/(tabs)/search.tsx
 import React, { useState, useEffect } from "react";
 import {
@@ -268,8 +17,8 @@ import { doctorService } from "@/services/api/doctorService";
 import { patientService } from "@/services/api/patientService";
 import { medicalRecordService } from "@/services/api/medicalRecordService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import apiClient from "@/services/api/config";
 import { useFocusEffect } from '@react-navigation/native';
+import { useLocalSearchParams } from "expo-router";
 
 // Define interfaces for our data types
 interface Medication {
@@ -360,12 +109,12 @@ interface SearchParams {
   medicalHistory?: string;
 }
 
-interface ApiResponse<T> {
-  data: T | T[] | any;
-  [key: string]: any;
-}
-
 export default function SearchScreen(): JSX.Element {
+  // Get URL parameters from navigation
+  const params = useLocalSearchParams();
+  const fromDashboard = params.fromDashboard === "true";
+  const showAllDoctors = params.showAllDoctors === "true";
+  
   const [userRole, setUserRole] = useState<string>("patient"); // Default role
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -382,24 +131,40 @@ export default function SearchScreen(): JSX.Element {
   const [recordsError, setRecordsError] = useState<string | null>(null);
   const [showRecords, setShowRecords] = useState<boolean>(false);
 
+  // Handle the navigation parameters
+  useEffect(() => {
+    if (fromDashboard && showAllDoctors) {
+      console.log("Navigated from dashboard to see all doctors");
+      // Force user role to patient to show doctors
+      setUserRole("patient");
+      // Fetch all doctors
+      fetchDoctors();
+    }
+  }, [fromDashboard, showAllDoctors]);
+
   // Run once on component mount to check user role
   useEffect(() => {
-    checkUserRole();
-  }, []);
+    // Only check user role if not coming from dashboard
+    if (!fromDashboard || !showAllDoctors) {
+      checkUserRole();
+    }
+  }, [fromDashboard, showAllDoctors]);
 
   // Fetch data when tab is focused
   useFocusEffect(
     React.useCallback(() => {
       console.log("Search tab focused");
-      if (userRole === "doctor") {
-        fetchPatients();
-      } else {
-        fetchDoctors();
+      if (!fromDashboard || !showAllDoctors) {
+        if (userRole === "doctor") {
+          fetchPatients();
+        } else {
+          fetchDoctors();
+        }
       }
       return () => {
         // Optional cleanup if needed
       };
-    }, [userRole]) // Depend on userRole so it refreshes if role changes
+    }, [userRole, fromDashboard, showAllDoctors]) // Depend on these variables
   );
 
   const checkUserRole = async (): Promise<void> => {
@@ -708,66 +473,61 @@ export default function SearchScreen(): JSX.Element {
   };
 
   // Function to fetch medical records for a patient
-  // Function to fetch medical records for a patient
-const fetchMedicalRecords = async (patientId: string, patientName: string): Promise<void> => {
-  try {
-    setRecordsLoading(true);
-    setSelectedPatientId(patientId);
-    setSelectedPatientName(patientName);
-    console.log(`Fetching medical records for patient: ${patientId}`);
-    
+  const fetchMedicalRecords = async (patientId: string, patientName: string): Promise<void> => {
     try {
-      const response = await fetchWithRetry(() => medicalRecordService.getPatientRecords(patientId));
+      setRecordsLoading(true);
+      setSelectedPatientId(patientId);
+      setSelectedPatientName(patientName);
+      console.log(`Fetching medical records for patient: ${patientId}`);
       
-      // In fetchMedicalRecords function:
-if (response && response.data) {
-  // Check if the response has a success property and data array
-  if (response.data.success && Array.isArray(response.data.data)) {
-    console.log("Medical records fetched successfully:", response.data.data.length);
-    // Validate each record before setting to state
-    const validatedRecords = response.data.data.map(record => ({
-      _id: record._id || `temp-${Math.random()}`,
-      patientId: record.patientId || selectedPatientId,
-      patientName: record.patientName || selectedPatientName,
-      doctorId: record.doctorId || "",
-      doctorName: record.doctorName || "Unknown Doctor",
-      date: record.date || new Date().toISOString(),
-      diagnosis: record.diagnosis || "No diagnosis",
-      symptoms: Array.isArray(record.symptoms) ? record.symptoms : [],
-      treatment: record.treatment || "",
-      medications: Array.isArray(record.medications) ? record.medications : [],
-      notes: record.notes || "",
-      followUp: record.followUp || "",
-      vitals: record.vitals || null,
-      attachments: Array.isArray(record.attachments) ? record.attachments : [],
-      createdAt: record.createdAt || record.date || new Date().toISOString(),
-      updatedAt: record.updatedAt || record.date || new Date().toISOString(),
-    }));
-    setMedicalRecords(validatedRecords);
-    setShowRecords(true);
-    setRecordsError(null);
-  }
-  // Apply similar validation to other response formats
-}
- else {
-        console.warn("No data received from reports API");
-        setRecordsError("Failed to fetch medical records. No data received.");
+      try {
+        const response = await fetchWithRetry(() => medicalRecordService.getPatientRecords(patientId));
+        
+        if (response && response.data) {
+          // Check if the response has a success property and data array
+          if (response.data.success && Array.isArray(response.data.data)) {
+            console.log("Medical records fetched successfully:", response.data.data.length);
+            // Validate each record before setting to state
+            const validatedRecords = response.data.data.map(record => ({
+              _id: record._id || `temp-${Math.random()}`,
+              patientId: record.patientId || selectedPatientId,
+              patientName: record.patientName || selectedPatientName,
+              doctorId: record.doctorId || "",
+              doctorName: record.doctorName || "Unknown Doctor",
+              date: record.date || new Date().toISOString(),
+              diagnosis: record.diagnosis || "No diagnosis",
+              symptoms: Array.isArray(record.symptoms) ? record.symptoms : [],
+              treatment: record.treatment || "",
+              medications: Array.isArray(record.medications) ? record.medications : [],
+              notes: record.notes || "",
+              followUp: record.followUp || "",
+              vitals: record.vitals || null,
+              attachments: Array.isArray(record.attachments) ? record.attachments : [],
+              createdAt: record.createdAt || record.date || new Date().toISOString(),
+              updatedAt: record.updatedAt || record.date || new Date().toISOString(),
+            }));
+            setMedicalRecords(validatedRecords);
+            setShowRecords(true);
+            setRecordsError(null);
+          }
+        } else {
+          console.warn("No data received from reports API");
+          setRecordsError("Failed to fetch medical records. No data received.");
+          setMedicalRecords([]);
+        }
+      } catch (apiError) {
+        console.error("Failed to fetch medical records:", apiError);
+        setRecordsError("Failed to fetch medical records. Please try again.");
         setMedicalRecords([]);
       }
-    } catch (apiError) {
-      console.error("Failed to fetch medical records:", apiError);
-      setRecordsError("Failed to fetch medical records. Please try again.");
+    } catch (err) {
+      console.error("Error in fetchMedicalRecords:", err);
+      setRecordsError("An unexpected error occurred. Please try again.");
       setMedicalRecords([]);
+    } finally {
+      setRecordsLoading(false);
     }
-  } catch (err) {
-    console.error("Error in fetchMedicalRecords:", err);
-    setRecordsError("An unexpected error occurred. Please try again.");
-    setMedicalRecords([]);
-  } finally {
-    setRecordsLoading(false);
-  }
-};
-
+  };
 
   const handleBookAppointment = (doctorId: string): void => {
     alert(`Booking appointment with doctor ID: ${doctorId}`);
@@ -807,88 +567,87 @@ if (response && response.data) {
   };
 
   // Render a single medical record
-  // Render a single medical record
-const renderMedicalRecord = (record: MedicalRecord): JSX.Element => {
-  return (
-    <View className="bg-white rounded-lg p-4 mb-4 shadow-sm">
-      <View className="flex-row justify-between items-center mb-2">
-        <Text className="text-lg font-bold text-gray-800">{record.diagnosis || "No diagnosis"}</Text>
-        <Text className="text-sm text-gray-500">{formatDate(record.date)}</Text>
-      </View>
-      
-      <View className="mb-3">
-        <Text className="text-sm font-semibold text-gray-700 mb-1">Doctor:</Text>
-        <Text className="text-sm text-gray-600">{record.doctorName || "Unknown"}</Text>
-      </View>
-      
-      <View className="mb-3">
-        <Text className="text-sm font-semibold text-gray-700 mb-1">Symptoms:</Text>
-        <View className="flex-row flex-wrap">
-          {record.symptoms && Array.isArray(record.symptoms) ? (
-            record.symptoms.map((symptom, index) => (
-              <View key={index} className="bg-gray-100 rounded-full px-3 py-1 mr-2 mb-2">
-                <Text className="text-xs text-gray-700">{symptom}</Text>
-              </View>
-            ))
-          ) : (
-            <Text className="text-sm text-gray-600">No symptoms recorded</Text>
-          )}
+  const renderMedicalRecord = (record: MedicalRecord): JSX.Element => {
+    return (
+      <View className="bg-white rounded-lg p-4 mb-4 shadow-sm">
+        <View className="flex-row justify-between items-center mb-2">
+          <Text className="text-lg font-bold text-gray-800">{record.diagnosis || "No diagnosis"}</Text>
+          <Text className="text-sm text-gray-500">{formatDate(record.date)}</Text>
         </View>
-      </View>
-      
-      <View className="mb-3">
-        <Text className="text-sm font-semibold text-gray-700 mb-1">Treatment:</Text>
-        <Text className="text-sm text-gray-600">{record.treatment || "No treatment recorded"}</Text>
-      </View>
-      
-      <View className="mb-3">
-        <Text className="text-sm font-semibold text-gray-700 mb-1">Medications:</Text>
-        {record.medications && Array.isArray(record.medications) && record.medications.length > 0 ? (
-          record.medications.map((med, index) => (
-            <View key={index} className="ml-2 mb-1">
-              <Text className="text-sm text-gray-600">
-                • {med.name} ({med.dosage}, {med.frequency}, {med.duration})
-              </Text>
-            </View>
-          ))
-        ) : (
-          <Text className="text-sm text-gray-600">No medications prescribed</Text>
-        )}
-      </View>
-      
-      {record.vitals && (
+        
         <View className="mb-3">
-          <Text className="text-sm font-semibold text-gray-700 mb-1">Vitals:</Text>
+          <Text className="text-sm font-semibold text-gray-700 mb-1">Doctor:</Text>
+          <Text className="text-sm text-gray-600">{record.doctorName || "Unknown"}</Text>
+        </View>
+        
+        <View className="mb-3">
+          <Text className="text-sm font-semibold text-gray-700 mb-1">Symptoms:</Text>
           <View className="flex-row flex-wrap">
-            <Text className="text-xs text-gray-600 mr-3">BP: {record.vitals.bloodPressure}</Text>
-            <Text className="text-xs text-gray-600 mr-3">HR: {record.vitals.heartRate} bpm</Text>
-            <Text className="text-xs text-gray-600 mr-3">Temp: {record.vitals.temperature}°F</Text>
-            {record.vitals.respiratoryRate && (
-              <Text className="text-xs text-gray-600 mr-3">RR: {record.vitals.respiratoryRate}</Text>
-            )}
-            {record.vitals.oxygenSaturation && (
-              <Text className="text-xs text-gray-600">O2: {record.vitals.oxygenSaturation}%</Text>
+            {record.symptoms && Array.isArray(record.symptoms) ? (
+              record.symptoms.map((symptom, index) => (
+                <View key={index} className="bg-gray-100 rounded-full px-3 py-1 mr-2 mb-2">
+                  <Text className="text-xs text-gray-700">{symptom}</Text>
+                </View>
+              ))
+            ) : (
+              <Text className="text-sm text-gray-600">No symptoms recorded</Text>
             )}
           </View>
         </View>
-      )}
-      
-      {record.notes && (
+        
         <View className="mb-3">
-          <Text className="text-sm font-semibold text-gray-700 mb-1">Notes:</Text>
-          <Text className="text-sm text-gray-600">{record.notes}</Text>
+          <Text className="text-sm font-semibold text-gray-700 mb-1">Treatment:</Text>
+          <Text className="text-sm text-gray-600">{record.treatment || "No treatment recorded"}</Text>
         </View>
-      )}
-      
-      {record.followUp && (
+        
         <View className="mb-3">
-          <Text className="text-sm font-semibold text-gray-700 mb-1">Follow-up:</Text>
-          <Text className="text-sm text-gray-600">{formatDate(record.followUp)}</Text>
+          <Text className="text-sm font-semibold text-gray-700 mb-1">Medications:</Text>
+          {record.medications && Array.isArray(record.medications) && record.medications.length > 0 ? (
+            record.medications.map((med, index) => (
+              <View key={index} className="ml-2 mb-1">
+                <Text className="text-sm text-gray-600">
+                  • {med.name} ({med.dosage}, {med.frequency}, {med.duration})
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text className="text-sm text-gray-600">No medications prescribed</Text>
+          )}
         </View>
-      )}
-    </View>
-  );
-};
+        
+        {record.vitals && (
+          <View className="mb-3">
+            <Text className="text-sm font-semibold text-gray-700 mb-1">Vitals:</Text>
+            <View className="flex-row flex-wrap">
+              <Text className="text-xs text-gray-600 mr-3">BP: {record.vitals.bloodPressure}</Text>
+              <Text className="text-xs text-gray-600 mr-3">HR: {record.vitals.heartRate} bpm</Text>
+              <Text className="text-xs text-gray-600 mr-3">Temp: {record.vitals.temperature}°F</Text>
+              {record.vitals.respiratoryRate && (
+                <Text className="text-xs text-gray-600 mr-3">RR: {record.vitals.respiratoryRate}</Text>
+              )}
+              {record.vitals.oxygenSaturation && (
+                <Text className="text-xs text-gray-600">O2: {record.vitals.oxygenSaturation}%</Text>
+              )}
+            </View>
+          </View>
+        )}
+        
+        {record.notes && (
+          <View className="mb-3">
+            <Text className="text-sm font-semibold text-gray-700 mb-1">Notes:</Text>
+            <Text className="text-sm text-gray-600">{record.notes}</Text>
+          </View>
+        )}
+        
+        {record.followUp && (
+          <View className="mb-3">
+            <Text className="text-sm font-semibold text-gray-700 mb-1">Follow-up:</Text>
+            <Text className="text-sm text-gray-600">{formatDate(record.followUp)}</Text>
+          </View>
+        )}
+      </View>
+    );
+  };
 
   return (
     <View className="p-6 pt-12 flex-1 bg-gray-50">
@@ -926,50 +685,62 @@ const renderMedicalRecord = (record: MedicalRecord): JSX.Element => {
             </TouchableOpacity>
           </View>
           
-          {medicalRecords.length === 0 ? (
-  <View className="flex-1 justify-center items-center p-4">
-    <MaterialIcons name="folder-open" size={48} color="#CCCCCC" />
-    <Text className="text-gray-500 text-lg mt-4">No medical records found</Text>
-    <Text className="text-gray-400 text-sm mt-2 text-center px-6">
-      {`${selectedPatientName} doesn't have any medical records in the system yet.`}
-    </Text>
-    {userRole === "doctor" && (
-      <TouchableOpacity
-        className="mt-6 bg-orange-500 px-5 py-2 rounded-lg"
-        onPress={() => {
-          // Navigate to create record screen or show create record modal
-          // This is where you'd implement the navigation to create a new record
-          Alert.alert(
-            "Create Medical Record",
-            `Would you like to create a new medical record for ${selectedPatientName}?`,
-            [
-              { text: "Cancel", style: "cancel" },
-              { 
-                text: "Create", 
-                onPress: () => {
-                  // Navigate to create record screen with patient info
-                  // For example: navigation.navigate('CreateMedicalRecord', { patientId: selectedPatientId, patientName: selectedPatientName })
-                  Alert.alert("Feature Coming Soon", "The ability to create medical records will be available in the next update.");
-                } 
-              }
-            ]
-          );
-        }}
-      >
-        <Text className="text-white font-medium">Create New Record</Text>
-      </TouchableOpacity>
-    )}
-  </View>
-) : (
-  <FlatList
-    data={medicalRecords}
-    renderItem={({ item }) => renderMedicalRecord(item)}
-    keyExtractor={(item) => item._id}
-    contentContainerStyle={{ padding: 16 }}
-    showsVerticalScrollIndicator={false}
-  />
-)}
-
+          {recordsLoading ? (
+            <View className="flex-1 justify-center items-center p-4">
+              <ActivityIndicator size="large" color="#FF6C00" />
+              <Text className="text-gray-500 mt-4">Loading medical records...</Text>
+            </View>
+          ) : recordsError ? (
+            <View className="flex-1 justify-center items-center p-4">
+              <Text className="text-red-500 mb-4">{recordsError}</Text>
+              <TouchableOpacity
+                className="bg-orange-500 px-4 py-2 rounded-lg"
+                onPress={() => fetchMedicalRecords(selectedPatientId!, selectedPatientName)}
+              >
+                <Text className="text-white font-medium">Retry</Text>
+              </TouchableOpacity>
+            </View>
+          ) : medicalRecords.length === 0 ? (
+            <View className="flex-1 justify-center items-center p-4">
+              <MaterialIcons name="folder-open" size={48} color="#CCCCCC" />
+              <Text className="text-gray-500 text-lg mt-4">No medical records found</Text>
+              <Text className="text-gray-400 text-sm mt-2 text-center px-6">
+                {`${selectedPatientName} doesn't have any medical records in the system yet.`}
+              </Text>
+              {userRole === "doctor" && (
+                <TouchableOpacity
+                  className="mt-6 bg-orange-500 px-5 py-2 rounded-lg"
+                  onPress={() => {
+                    // Navigate to create record screen or show create record modal
+                    Alert.alert(
+                      "Create Medical Record",
+                      `Would you like to create a new medical record for ${selectedPatientName}?`,
+                      [
+                        { text: "Cancel", style: "cancel" },
+                        { 
+                          text: "Create", 
+                          onPress: () => {
+                            // Navigate to create record screen with patient info
+                            Alert.alert("Feature Coming Soon", "The ability to create medical records will be available in the next update.");
+                          } 
+                        }
+                      ]
+                    );
+                  }}
+                >
+                  <Text className="text-white font-medium">Create New Record</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ) : (
+            <FlatList
+              data={medicalRecords}
+              renderItem={({ item }) => renderMedicalRecord(item)}
+              keyExtractor={(item) => item._id}
+              contentContainerStyle={{ padding: 16 }}
+              showsVerticalScrollIndicator={false}
+            />
+          )}
         </View>
       )}
 
@@ -995,6 +766,7 @@ const renderMedicalRecord = (record: MedicalRecord): JSX.Element => {
             contentContainerStyle={{ paddingBottom: 16 }}
             className="mb-4"
           >
+            
             {userRole === "doctor" ? (
               patients && patients.length > 0 ? (
                 patients.map((patient) => (

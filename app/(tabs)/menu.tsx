@@ -5,7 +5,7 @@ import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router"; // Import router
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
-import * as Updates from 'expo-updates'; // Import Updates for app restart
+import * as Updates from 'expo-updates'; 
 
 interface MenuItemProps {
   title: string;
@@ -85,8 +85,7 @@ const MenuScreen: React.FC = () => {
                 await Updates.reloadAsync();
               } catch (error) {
                 console.error('Error restarting app:', error);
-                // Fallback to navigation if reload fails
-                navigateToLogin();
+                
               }
             } 
           }]
@@ -105,10 +104,7 @@ const MenuScreen: React.FC = () => {
     }
   };
 
-  const navigateToLogin = () => {
-    // Navigate to the root index.tsx (login page)
-    router.replace("/");
-  };
+ 
 
   return (
     <View className="flex-1 bg-white pt-8">
