@@ -50,7 +50,7 @@ const account = () => {
   };
 
   return (
-    <ScrollView className="flex-1 bg-white">
+    <ScrollView className="flex-1 bg-white pt-20">
       <Stack.Screen options={{
         headerTitle: "Account Settings",
         headerTitleAlign: 'center',

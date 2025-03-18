@@ -229,7 +229,7 @@ const SignUp: React.FC = () => {
         };
       }
       
-      const response = await fetch("http://localhost:3000/register", {
+      const response = await fetch("http://192.168.87.140:3000/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

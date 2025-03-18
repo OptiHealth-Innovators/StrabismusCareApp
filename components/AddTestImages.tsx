@@ -62,7 +62,7 @@ export default function AddTestImages() {
             />
             <TouchableOpacity>
               {/* Edit Icon Placeholder */}
-              <Text className="text-gray-500">&#x270E;</Text> {/* Pencil icon */}
+              <Text className="text-gray-500">&#x270E;</Text>
             </TouchableOpacity>
           </View>
         </View>

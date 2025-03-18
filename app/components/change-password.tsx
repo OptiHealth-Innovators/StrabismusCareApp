@@ -21,7 +21,7 @@ const ChangePassword = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white pt-20">
       <ScrollView showsVerticalScrollIndicator={false} contentContainerClassName="flex-grow">
         <Stack.Screen options={{
           headerTitle: "",
@@ -37,7 +37,7 @@ const ChangePassword = () => {
           {/* Logo */}
           <Image
             source={require("@/assets/images/icon-hz.png")}
-            className="h-12 w-[320px] self-center mb-10"
+            className="h-10 w-[260px] self-center mb-10"
           />
           
           {/* Header */}
