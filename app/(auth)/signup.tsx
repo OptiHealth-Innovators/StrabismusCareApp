@@ -16,6 +16,9 @@ import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { FontAwesome } from '@expo/vector-icons';
+import Constants from 'expo-constants';
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.BACKEND_URL;
+
 
 interface PasswordRequirement {
   test: RegExp;
@@ -229,7 +232,7 @@ const SignUp: React.FC = () => {
         };
       }
       
-      const response = await fetch("http://192.168.87.140:3000/register", {
+      const response = await fetch(`${ENV_BACKEND_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -12,6 +12,9 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.BACKEND_URL;
 
 interface LoginResponse {
   success?: boolean;
@@ -75,7 +78,7 @@ const Index: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("http://192.168.87.140:3000/login", {
+      const response = await fetch(`${ENV_BACKEND_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
