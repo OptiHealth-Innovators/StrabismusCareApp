@@ -20,16 +20,15 @@ const getApiUrl = () => {
   if (__DEV__) {
     // Development - use environment variables for different platforms
     if (Platform.OS === 'android') {
-      return Constants.expoConfig?.extra?.ENV_BACKEND_URL_ANDROID || 'http://10.0.2.2:3000';
+      return Constants.expoConfig?.extra?.ENV_BACKEND_URL_ANDROID;
     }
-    return Constants.expoConfig?.extra?.ENV_BACKEND_URL_IOS || 'http://localhost:3000';
+    return Constants.expoConfig?.extra?.ENV_BACKEND_URL_IOS;
   }
   // Production
-  return Constants.expoConfig?.extra?.BACKEND_URL || 'https://your-production-api.com';
+  return Constants.expoConfig?.extra?.BACKEND_URL;
 };
 
 const ENV_BACKEND_URL = getApiUrl();
-console.log("API_BASE_URL: ", ENV_BACKEND_URL);
 
 interface LoginResponse {
   success?: boolean;

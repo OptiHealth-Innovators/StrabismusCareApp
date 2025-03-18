@@ -11,20 +11,19 @@ import {
   ImageSourcePropType,
   Platform,
   ScrollView,
-  Modal
+  Modal,
 } from "react-native";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
-import { FontAwesome } from '@expo/vector-icons';
-import Constants from 'expo-constants';
+import { FontAwesome } from "@expo/vector-icons";
+import Constants from "expo-constants";
 
-const ENV_BACKEND_URL = Platform.OS === 'ios' 
-  ? Constants.expoConfig?.extra?.ENV_BACKEND_URL_IOS
-  : Constants.expoConfig?.extra?.ENV_BACKEND_URL_ANDROID;  // Add semicolon here
-
+const ENV_BACKEND_URL =
+  Platform.OS === "ios"
+    ? Constants.expoConfig?.extra?.ENV_BACKEND_URL_IOS
+    : Constants.expoConfig?.extra?.ENV_BACKEND_URL_ANDROID;
 console.log("backend url", ENV_BACKEND_URL);
-
 
 interface PasswordRequirement {
   test: RegExp;
@@ -41,20 +40,23 @@ const SignUp: React.FC = () => {
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [emailError, setEmailError] = useState<string>("");
   const [roleError, setRoleError] = useState<string>("");
-  
+
   // Doctor specific fields
   const [showDoctorFields, setShowDoctorFields] = useState<boolean>(false);
   const [contact, setContact] = useState<string>("");
   const [address, setAddress] = useState<string>("");
-  const [specialization, setSpecialization] = useState<string>("Dentist");
+  const [specialty, setSpecialty] = useState<string>("Ophthalmologist");
   const [tenure, setTenure] = useState<string>("");
   const [dateOfBirth, setDateOfBirth] = useState<string>("");
-  
+  const [education, setEducation] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+
   // iOS Picker modal state
   const [showRolePicker, setShowRolePicker] = useState<boolean>(false);
-  const [showSpecializationPicker, setShowSpecializationPicker] = useState<boolean>(false);
+  const [showSpecializationPicker, setShowSpecialtyPicker] =
+    useState<boolean>(false);
   const [tempRole, setTempRole] = useState<string>("");
-  const [tempSpecialization, setTempSpecialization] = useState<string>("Dentist");
+  const [tempSpecialty, setTempSpecialty] = useState<string>("Ophthalmologist");
 
   interface SaveUserData {
     (userId: string): Promise<void>;
@@ -139,17 +141,17 @@ const SignUp: React.FC = () => {
       setShowDoctorFields(value === "doctor");
     }
   };
-  
+
   const confirmRoleSelection = (): void => {
     setRole(tempRole);
     validateRole(tempRole);
     setShowDoctorFields(tempRole === "doctor");
     setShowRolePicker(false);
   };
-  
-  const confirmSpecializationSelection = (): void => {
-    setSpecialization(tempSpecialization);
-    setShowSpecializationPicker(false);
+
+  const confirmSpecialtySelection = (): void => {
+    setSpecialty(tempSpecialty);
+    setShowSpecialtyPicker(false);
   };
 
   interface RegisterResponse {
@@ -198,7 +200,7 @@ const SignUp: React.FC = () => {
       });
       return;
     }
-    
+
     // Validate doctor fields if role is doctor
     if (role === "doctor") {
       if (!contact.trim()) {
@@ -209,7 +211,7 @@ const SignUp: React.FC = () => {
         });
         return;
       }
-      
+
       if (!address.trim()) {
         Toast.show({
           type: "error",
@@ -218,7 +220,7 @@ const SignUp: React.FC = () => {
         });
         return;
       }
-      
+
       if (!tenure.trim()) {
         Toast.show({
           type: "error",
@@ -227,7 +229,7 @@ const SignUp: React.FC = () => {
         });
         return;
       }
-      
+
       if (!dateOfBirth.trim()) {
         Toast.show({
           type: "error",
@@ -248,21 +250,23 @@ const SignUp: React.FC = () => {
         role: role,
         password,
       };
-      
+
       // Add doctor-specific fields if role is doctor
       if (role === "doctor") {
         requestBody.doctorInfo = {
           contact: contact.trim(),
           address: address.trim(),
-          specialization,
+          specialty,
           tenure: tenure.trim(),
           dateOfBirth: dateOfBirth.trim(),
+          education: education.trim(),
+          description,
         };
       }
-      
+
       // Debug log to verify the URL being used
       console.log("Making request to:", `${ENV_BACKEND_URL}/register`);
-      
+
       const response = await fetch(`${ENV_BACKEND_URL}/register`, {
         method: "POST",
         headers: {
@@ -293,7 +297,7 @@ const SignUp: React.FC = () => {
         setRoleError("");
         setContact("");
         setAddress("");
-        setSpecialization("Dentist");
+        setSpecialty("Dentist");
         setTenure("");
         setDateOfBirth("");
         setShowDoctorFields(false);
@@ -335,20 +339,40 @@ const SignUp: React.FC = () => {
   // iOS Role Picker Modal
   const renderRolePickerModal = () => {
     return (
-      <Modal
-        visible={showRolePicker}
-        transparent={true}
-        animationType="slide"
-      >
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1 }} onTouchEnd={() => setShowRolePicker(false)} />
-          <View style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
+      <Modal visible={showRolePicker} transparent={true} animationType="slide">
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <View
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", flex: 1 }}
+            onTouchEnd={() => setShowRolePicker(false)}
+          />
+          <View
+            style={{
+              backgroundColor: "white",
+              padding: 16,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 15,
+              }}
+            >
               <TouchableOpacity onPress={() => setShowRolePicker(false)}>
-                <Text style={{ color: '#ff7900', fontSize: 16, fontWeight: '500' }}>Cancel</Text>
+                <Text
+                  style={{ color: "#ff7900", fontSize: 16, fontWeight: "500" }}
+                >
+                  Cancel
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={confirmRoleSelection}>
-                <Text style={{ color: '#ff7900', fontSize: 16, fontWeight: '500' }}>Done</Text>
+                <Text
+                  style={{ color: "#ff7900", fontSize: 16, fontWeight: "500" }}
+                >
+                  Done
+                </Text>
               </TouchableOpacity>
             </View>
             <Picker
@@ -366,40 +390,71 @@ const SignUp: React.FC = () => {
       </Modal>
     );
   };
-  
+
   // iOS Specialization Picker Modal
-  const renderSpecializationPickerModal = () => {
+  const renderSpecialtyPickerModal = () => {
     return (
       <Modal
         visible={showSpecializationPicker}
         transparent={true}
         animationType="slide"
       >
-        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-          <View style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', flex: 1 }} onTouchEnd={() => setShowSpecializationPicker(false)} />
-          <View style={{ backgroundColor: 'white', padding: 16, borderTopLeftRadius: 10, borderTopRightRadius: 10 }}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 }}>
-              <TouchableOpacity onPress={() => setShowSpecializationPicker(false)}>
-                <Text style={{ color: '#ff7900', fontSize: 16, fontWeight: '500' }}>Cancel</Text>
+        <View style={{ flex: 1, justifyContent: "flex-end" }}>
+          <View
+            style={{ backgroundColor: "rgba(0, 0, 0, 0.5)", flex: 1 }}
+            onTouchEnd={() => setShowSpecialtyPicker(false)}
+          />
+          <View
+            style={{
+              backgroundColor: "white",
+              padding: 16,
+              borderTopLeftRadius: 10,
+              borderTopRightRadius: 10,
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                marginBottom: 15,
+              }}
+            >
+              <TouchableOpacity onPress={() => setShowSpecialtyPicker(false)}>
+                <Text
+                  style={{ color: "#ff7900", fontSize: 16, fontWeight: "500" }}
+                >
+                  Cancel
+                </Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={confirmSpecializationSelection}>
-                <Text style={{ color: '#ff7900', fontSize: 16, fontWeight: '500' }}>Done</Text>
+              <TouchableOpacity onPress={confirmSpecialtySelection}>
+                <Text
+                  style={{ color: "#ff7900", fontSize: 16, fontWeight: "500" }}
+                >
+                  Done
+                </Text>
               </TouchableOpacity>
             </View>
             <Picker
-              selectedValue={tempSpecialization}
-              onValueChange={(value) => setTempSpecialization(value)}
+              selectedValue={tempSpecialty}
+              onValueChange={(value) => setTempSpecialty(value)}
               enabled={!loading}
               itemStyle={{ height: 120, fontSize: 16 }}
             >
-              <Picker.Item label="Dentist" value="Dentist" />
-              <Picker.Item label="Cardiologist" value="Cardiologist" />
-              <Picker.Item label="Dermatologist" value="Dermatologist" />
-              <Picker.Item label="Pediatrician" value="Pediatrician" />
-              <Picker.Item label="Neurologist" value="Neurologist" />
-              <Picker.Item label="Orthopedist" value="Orthopedist" />
-              <Picker.Item label="Psychiatrist" value="Psychiatrist" />
-              <Picker.Item label="General Practitioner" value="General Practitioner" />
+              <Picker.Item label="Ophthalmologist" value="Ophthalmologist" />
+              <Picker.Item label="Optometrist" value="Optometrist" />
+              <Picker.Item label="Optician" value="Optician" />
+              <Picker.Item
+                label="Retina Specialist"
+                value="Retina Specialist"
+              />
+              <Picker.Item
+                label="Glaucoma Specialist"
+                value="Glaucoma Specialist"
+              />
+              <Picker.Item
+                label="Pediatric Ophthalmologist"
+                value="Pediatric Ophthalmologist"
+              />
             </Picker>
           </View>
         </View>
@@ -473,7 +528,11 @@ const SignUp: React.FC = () => {
                   onPress={() => setShowRolePicker(true)}
                   disabled={loading}
                 >
-                  <Text className={`text-base ${role ? "text-black" : "text-[#aaa]"}`}>
+                  <Text
+                    className={`text-base ${
+                      role ? "text-black" : "text-[#aaa]"
+                    }`}
+                  >
                     {role || "Select your role"}
                   </Text>
                 </TouchableOpacity>
@@ -524,7 +583,7 @@ const SignUp: React.FC = () => {
                     keyboardType="phone-pad"
                   />
                 </View>
-                
+
                 {/* Address */}
                 <View className="mb-6">
                   <Text className="text-sm text-[#525a66] mb-2 font-normal">
@@ -539,7 +598,7 @@ const SignUp: React.FC = () => {
                     editable={!loading}
                   />
                 </View>
-                
+
                 {/* Specialization */}
                 <View className="mb-6">
                   <Text className="text-sm text-[#525a66] mb-2 font-normal">
@@ -548,35 +607,43 @@ const SignUp: React.FC = () => {
                   {Platform.OS === "ios" ? (
                     <TouchableOpacity
                       className="border border-[#e9e9e9] rounded-md px-4 py-3"
-                      onPress={() => setShowSpecializationPicker(true)}
+                      onPress={() => setShowSpecialtyPicker(true)}
                       disabled={loading}
                     >
-                      <Text className="text-base text-black">
-                        {specialization}
-                      </Text>
+                      <Text className="text-base text-black">{specialty}</Text>
                     </TouchableOpacity>
                   ) : (
                     <View className="border border-[#e9e9e9] rounded-md overflow-hidden">
                       <Picker
-                        selectedValue={specialization}
-                        onValueChange={(value) => setSpecialization(value)}
+                        selectedValue={specialty}
+                        onValueChange={(value) => setSpecialty(value)}
                         enabled={!loading}
                         style={{ height: 50 }}
                         mode="dropdown"
                       >
-                        <Picker.Item label="Dentist" value="Dentist" />
-                        <Picker.Item label="Cardiologist" value="Cardiologist" />
-                        <Picker.Item label="Dermatologist" value="Dermatologist" />
-                        <Picker.Item label="Pediatrician" value="Pediatrician" />
-                        <Picker.Item label="Neurologist" value="Neurologist" />
-                        <Picker.Item label="Orthopedist" value="Orthopedist" />
-                        <Picker.Item label="Psychiatrist" value="Psychiatrist" />
-                        <Picker.Item label="General Practitioner" value="General Practitioner" />
+                        <Picker.Item
+                          label="Ophthalmologist"
+                          value="Ophthalmologist"
+                        />
+                        <Picker.Item label="Optometrist" value="Optometrist" />
+                        <Picker.Item label="Optician" value="Optician" />
+                        <Picker.Item
+                          label="Retina Specialist"
+                          value="Retina Specialist"
+                        />
+                        <Picker.Item
+                          label="Glaucoma Specialist"
+                          value="Glaucoma Specialist"
+                        />
+                        <Picker.Item
+                          label="Pediatric Ophthalmologist"
+                          value="Pediatric Ophthalmologist"
+                        />
                       </Picker>
                     </View>
                   )}
                 </View>
-                
+
                 {/* Practicing Tenure */}
                 <View className="mb-6">
                   <Text className="text-sm text-[#525a66] mb-2 font-normal">
@@ -591,7 +658,7 @@ const SignUp: React.FC = () => {
                     editable={!loading}
                   />
                 </View>
-                
+
                 {/* Date of Birth */}
                 <View className="mb-6">
                   <Text className="text-sm text-[#525a66] mb-2 font-normal">
@@ -606,11 +673,43 @@ const SignUp: React.FC = () => {
                       onChangeText={setDateOfBirth}
                       editable={!loading}
                     />
-                    <Image
+                    {/* <Image
                       source={calendarIcon}
                       className="absolute right-3 top-3 w-6 h-6"
-                    />
+                    /> */}
                   </View>
+                </View>
+
+                {/* Education */}
+                <View className="mb-6">
+                  <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                    Education
+                  </Text>
+                  <TextInput
+                    className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
+                    placeholder="Enter your education details"
+                    placeholderTextColor="#aaa"
+                    value={education}
+                    onChangeText={setEducation}
+                    editable={!loading}
+                  />
+                </View>
+
+                {/* About Me */}
+                <View className="mb-6">
+                  <Text className="text-sm text-[#525a66] mb-2 font-normal">
+                    About Me
+                  </Text>
+                  <TextInput
+                    className="border border-[#e9e9e9] rounded-md px-4 py-3 text-base text-black"
+                    placeholder="Tell us about yourself"
+                    placeholderTextColor="#aaa"
+                    value={description}
+                    onChangeText={setDescription}
+                    editable={!loading}
+                    multiline={true}
+                    numberOfLines={4}
+                  />
                 </View>
               </>
             )}
@@ -699,7 +798,10 @@ const SignUp: React.FC = () => {
             <Text className="text-lg text-[#525a66] text-center font-manrope-regular font-[800]">
               Already have an account?{" "}
             </Text>
-            <TouchableOpacity onPress={() => router.push("/")} disabled={loading}>
+            <TouchableOpacity
+              onPress={() => router.push("/")}
+              disabled={loading}
+            >
               <Text
                 className={`text-lg text-[#ff7900] font-manrope-regular font-[800] ${
                   loading ? "opacity-50" : ""
@@ -710,11 +812,11 @@ const SignUp: React.FC = () => {
             </TouchableOpacity>
           </View>
         </View>
-        
+
         {/* iOS Picker Modals */}
         {renderRolePickerModal()}
-        {renderSpecializationPickerModal()}
-        
+        {renderSpecialtyPickerModal()}
+
         <Toast />
       </SafeAreaView>
     </ScrollView>
