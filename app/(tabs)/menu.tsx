@@ -1,9 +1,10 @@
 // app/menu.tsx
-import React from "react";
-import { View, Text, TouchableOpacity, Image, Linking } from "react-native";
+import React, { useState } from "react";
+import { View, Text, TouchableOpacity, Image, Linking, Alert } from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { router } from "expo-router"; // Import  router
+import { router } from "expo-router"; // Import router
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 interface MenuItemProps {
   title: string;
@@ -57,11 +58,44 @@ const MenuItem: React.FC<MenuItemProps> = ({
 };
 
 const MenuScreen: React.FC = () => {
-  const handleLogout = () => {
-    // Implement your logout logic here (e.g., clear user session, navigate to login)
-    // Example:
-    // authService.logout(); 
-    router.replace("/"); 
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    if (isLoggingOut) return; // Prevent multiple taps
+    
+    setIsLoggingOut(true);
+    
+    try {
+      // Clear user data from AsyncStorage
+      await AsyncStorage.removeItem('user');
+      
+      // Verify the data was removed
+      const checkData = await AsyncStorage.getItem('user');
+      if (checkData === null) {
+        console.log('User data successfully removed from AsyncStorage');
+        
+        Alert.alert(
+          "Logged Out",
+          "You have been successfully logged out.",
+          [{ text: "OK", onPress: () => navigateToLogin() }]
+        );
+      } else {
+        throw new Error('Failed to remove user data');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      Alert.alert(
+        "Logout Failed",
+        "There was an error logging out. Please try again.",
+        [{ text: "OK" }]
+      );
+      setIsLoggingOut(false);
+    }
+  };
+
+  const navigateToLogin = () => {
+    // Navigate to the root index.tsx (login page)
+    router.replace("/");
   };
 
   return (
@@ -109,10 +143,13 @@ const MenuScreen: React.FC = () => {
       </View>
 
       <TouchableOpacity
-        className="bg-[#FF7900] mx-8 mt-36 mb-4 py-3 rounded-lg items-center"
+        className={`bg-[#FF7900] mx-8 mt-36 mb-4 py-3 rounded-lg items-center ${isLoggingOut ? 'opacity-50' : ''}`}
         onPress={handleLogout}
+        disabled={isLoggingOut}
       >
-        <Text className="text-white text-lg font-semibold">Logout</Text>
+        <Text className="text-white text-lg font-semibold">
+          {isLoggingOut ? "Logging out..." : "Logout"}
+        </Text>
       </TouchableOpacity>
 
       <Text className="text-center text-gray-500 text-sm mb-4">

@@ -20,8 +20,10 @@ import { FontAwesome } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 
 const ENV_BACKEND_URL = Platform.OS === 'ios' 
-  ? Constants.expoConfig?.extra?.BACKEND_URL_IOS || "http://localhost:3000"
-  : Constants.expoConfig?.extra?.BACKEND_URL_ANDROID || "http://10.0.2.2:3000";
+  ? Constants.expoConfig?.extra?.ENV_BACKEND_URL_IOS
+  : Constants.expoConfig?.extra?.ENV_BACKEND_URL_ANDROID;  // Add semicolon here
+
+console.log("backend url", ENV_BACKEND_URL);
 
 
 interface PasswordRequirement {

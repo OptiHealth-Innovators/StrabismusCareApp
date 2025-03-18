@@ -18,7 +18,7 @@ type PatientCardProps = {
   lastVisit?: string;
   upcomingAppointment?: string;
   bloodType?: string;
-  vitals?: any; // Add this to handle the nested vitals object
+  vitals?: any; 
   onPress: (id: string) => void;
   profileImage?: string | null;
 };
@@ -34,30 +34,30 @@ const PatientCard: React.FC<PatientCardProps> = ({
   lastVisit,
   upcomingAppointment,
   bloodType,
-  vitals, // Add this parameter
+  vitals, 
   onPress,
   profileImage,
 }) => {
   const [showDetails, setShowDetails] = useState(false);
 
-  // Use vitals data as fallback if direct props are not available
+  
   const effectiveBloodType = bloodType || (vitals && vitals.bloodType);
   const effectiveLastVisit = lastVisit || (vitals && vitals.lastVisit);
   const effectiveUpcomingAppointment = upcomingAppointment || (vitals && vitals.upcomingAppointment);
 
-  // Safely format date without using date-fns
+
   const formatDateSafely = (dateString: string | undefined) => {
     if (!dateString) return "Not scheduled";
     
     try {
       const dateObj = new Date(dateString);
       
-      // Check if date is valid
+     
       if (isNaN(dateObj.getTime())) {
         return "Invalid date";
       }
       
-      // Get month name
+
       const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       const monthName = months[dateObj.getMonth()];
       
@@ -71,7 +71,7 @@ const PatientCard: React.FC<PatientCardProps> = ({
   const formattedLastVisit = formatDateSafely(effectiveLastVisit);
   const formattedUpcomingAppointment = formatDateSafely(effectiveUpcomingAppointment);
 
-  // Get the next medication due (for quick reference)
+  
   const getNextMedication = () => {
     if (medications && Array.isArray(medications) && medications.length > 0) {
       return medications[0];
@@ -81,7 +81,7 @@ const PatientCard: React.FC<PatientCardProps> = ({
 
   const nextMedication = getNextMedication();
   
-  // Safe render functions to handle null/undefined data
+
   const safeRenderMedicalHistory = () => {
     if (!medicalHistory || !Array.isArray(medicalHistory) || medicalHistory.length === 0) {
       return (
@@ -148,7 +148,7 @@ const PatientCard: React.FC<PatientCardProps> = ({
             source={
               profileImage 
                 ? { uri: profileImage } 
-                : require("@/assets/images/doc.png") // Create a default patient avatar
+                : require("@/assets/images/doc.png") 
             }
             className="w-12 h-12 rounded-full"
           />
@@ -201,7 +201,7 @@ const PatientCard: React.FC<PatientCardProps> = ({
         )}
 
         {/* Action Buttons */}
-        <View className="flex-row space-x-2">
+        <View className="flex-row space-x-2 gap-3">
           <TouchableOpacity 
             className="bg-blue-500 rounded-xl py-3 flex-1 items-center justify-center"
             onPress={() => onPress(_id)}
