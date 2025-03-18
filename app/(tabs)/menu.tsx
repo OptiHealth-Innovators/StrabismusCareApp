@@ -5,6 +5,7 @@ import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { router } from "expo-router"; // Import router
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import * as Updates from 'expo-updates'; // Import Updates for app restart
 
 interface MenuItemProps {
   title: string;
@@ -66,7 +67,6 @@ const MenuScreen: React.FC = () => {
     setIsLoggingOut(true);
     
     try {
-      // Clear user data from AsyncStorage
       await AsyncStorage.removeItem('user');
       
       // Verify the data was removed
@@ -77,7 +77,19 @@ const MenuScreen: React.FC = () => {
         Alert.alert(
           "Logged Out",
           "You have been successfully logged out.",
-          [{ text: "OK", onPress: () => navigateToLogin() }]
+          [{ 
+            text: "OK", 
+            onPress: async () => {
+              try {
+                // Restart the app
+                await Updates.reloadAsync();
+              } catch (error) {
+                console.error('Error restarting app:', error);
+                // Fallback to navigation if reload fails
+                navigateToLogin();
+              }
+            } 
+          }]
         );
       } else {
         throw new Error('Failed to remove user data');
