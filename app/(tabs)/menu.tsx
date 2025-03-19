@@ -1,18 +1,39 @@
 // app/menu.tsx
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Image, Linking, Alert } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Linking,
+  Alert,
+} from "react-native";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { router } from "expo-router"; // Import router
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
-import * as Updates from 'expo-updates'; 
+import { router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Updates from "expo-updates";
+import Constants from "expo-constants";
+
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL_LOCAL;
 
 interface MenuItemProps {
   title: string;
-  href?: `/${string}` | `../${string}` | `(${string})` | `/(${string})` | string; // Internal route (optional)
-  externalUrl?: string; // External URL (optional)
+  href?:
+    | `/${string}`
+    | `../${string}`
+    | `(${string})`
+    | `/(${string})`
+    | string;
+  externalUrl?: string;
   icon: React.ReactNode;
-  onPress?: () => void; // Optional onPress handler
+  onPress?: () => void;
+}
+
+interface UserInfo {
+  name: string;
+  profileImage?: string; // Add profileImage property
+  // Add other user properties as needed
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({
@@ -24,20 +45,20 @@ const MenuItem: React.FC<MenuItemProps> = ({
 }) => {
   const handlePress = () => {
     if (onPress) {
-      onPress(); // Execute custom onPress first
+      onPress();
     }
 
     if (href) {
       router.push(href as any);
     } else if (externalUrl) {
-      Linking.openURL(externalUrl); // Open external URL
+      Linking.openURL(externalUrl);
     }
   };
 
   return (
     <TouchableOpacity
       className="flex-row items-center justify-between mx-8 py-4 border-b border-gray-200"
-      onPress={handlePress} // Use the combined handler
+      onPress={handlePress}
     >
       <View className="flex-row items-center">
         <View
@@ -52,7 +73,6 @@ const MenuItem: React.FC<MenuItemProps> = ({
         </View>
         <Text className="text-lg text-gray-700">{title}</Text>
       </View>
-      {/* Arrow or External Link Indicator */}
       <Text className="text-gray-400 text-lg">{externalUrl ? "↗" : "›"}</Text>
     </TouchableOpacity>
   );
@@ -60,41 +80,59 @@ const MenuItem: React.FC<MenuItemProps> = ({
 
 const MenuScreen: React.FC = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("user");
+        if (!userId) {
+          throw new Error("User ID not found in AsyncStorage");
+        }
+
+        const response = await fetch(`${ENV_BACKEND_URL}/user/${userId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user info");
+        }
+        const data = await response.json();
+        setUserInfo(data.user);
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleLogout = async () => {
-    if (isLoggingOut) return; // Prevent multiple taps
-    
+    if (isLoggingOut) return;
+
     setIsLoggingOut(true);
-    
+
     try {
-      await AsyncStorage.removeItem('user');
-      
-      // Verify the data was removed
-      const checkData = await AsyncStorage.getItem('user');
+      await AsyncStorage.removeItem("user");
+
+      const checkData = await AsyncStorage.getItem("user");
       if (checkData === null) {
-        console.log('User data successfully removed from AsyncStorage');
-        
-        Alert.alert(
-          "Logged Out",
-          "You have been successfully logged out.",
-          [{ 
-            text: "OK", 
+        console.log("User data successfully removed from AsyncStorage");
+
+        Alert.alert("Logged Out", "You have been successfully logged out.", [
+          {
+            text: "OK",
             onPress: async () => {
               try {
-                // Restart the app
                 await Updates.reloadAsync();
               } catch (error) {
-                console.error('Error restarting app:', error);
-                
+                console.error("Error restarting app:", error);
               }
-            } 
-          }]
-        );
+            },
+          },
+        ]);
       } else {
-        throw new Error('Failed to remove user data');
+        throw new Error("Failed to remove user data");
       }
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error("Error during logout:", error);
       Alert.alert(
         "Logout Failed",
         "There was an error logging out. Please try again.",
@@ -104,17 +142,21 @@ const MenuScreen: React.FC = () => {
     }
   };
 
- 
-
   return (
     <View className="flex-1 bg-white pt-8">
       {/* Header Section */}
       <View className="items-center mt-8">
         <Image
-          source={require("@/assets/images/doc.png")} // Make sure this path is correct
+          source={{
+            uri:
+              userInfo?.profileImage ||
+              "https://api.dicebear.com/9.x/adventurer/png?seed=Maria",
+          }}
           className="w-24 h-24 rounded-full"
         />
-        <Text className="text-2xl font-semibold mt-4">Dr. Muhammad Tauhid</Text>
+        <Text className="text-2xl font-semibold mt-4">
+          {userInfo?.name || "Loading..."}
+        </Text>
       </View>
 
       <View className="mt-8">
@@ -151,7 +193,9 @@ const MenuScreen: React.FC = () => {
       </View>
 
       <TouchableOpacity
-        className={`bg-[#FF7900] mx-8 mt-36 mb-4 py-3 rounded-lg items-center ${isLoggingOut ? 'opacity-50' : ''}`}
+        className={`bg-[#FF7900] mx-8 mt-10 mb-4 py-3 rounded-lg items-center ${
+          isLoggingOut ? "opacity-50" : ""
+        }`}
         onPress={handleLogout}
         disabled={isLoggingOut}
       >

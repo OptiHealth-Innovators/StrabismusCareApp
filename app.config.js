@@ -57,8 +57,8 @@ export default {
         projectId: "93482b66-8399-4824-be0c-8f4f0a203275"
       },
       // Fix the variable names to match what you're using in your code
-      ENV_BACKEND_URL_IOS: process.env.ENV_BACKEND_URL_IOS,
-      ENV_BACKEND_URL_ANDROID: process.env.ENV_BACKEND_URL_ANDROID
+      ENV_BACKEND_URL: process.env.ENV_BACKEND_URL,
+      ENV_BACKEND_URL_LOCAL: process.env.ENV_BACKEND_URL_LOCAL
     }
   }
 };

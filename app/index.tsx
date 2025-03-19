@@ -15,20 +15,7 @@ import { router } from "expo-router";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
-// Dynamic API URL based on platform and environment
-const getApiUrl = () => {
-  if (__DEV__) {
-    // Development - use environment variables for different platforms
-    if (Platform.OS === 'android') {
-      return Constants.expoConfig?.extra?.ENV_BACKEND_URL_ANDROID;
-    }
-    return Constants.expoConfig?.extra?.ENV_BACKEND_URL_IOS;
-  }
-  // Production
-  return Constants.expoConfig?.extra?.BACKEND_URL;
-};
-
-const ENV_BACKEND_URL = getApiUrl();
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL;
 
 interface LoginResponse {
   success?: boolean;

@@ -19,11 +19,7 @@ import { Picker } from "@react-native-picker/picker";
 import { FontAwesome } from "@expo/vector-icons";
 import Constants from "expo-constants";
 
-const ENV_BACKEND_URL =
-  Platform.OS === "ios"
-    ? Constants.expoConfig?.extra?.ENV_BACKEND_URL_IOS
-    : Constants.expoConfig?.extra?.ENV_BACKEND_URL_ANDROID;
-console.log("backend url", ENV_BACKEND_URL);
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL_LOCAL;
 
 interface PasswordRequirement {
   test: RegExp;
