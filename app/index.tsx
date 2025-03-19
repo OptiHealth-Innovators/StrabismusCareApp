@@ -16,6 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL;
+console.log('ENV_BACKEND_URL:', ENV_BACKEND_URL);
 
 interface LoginResponse {
   success?: boolean;

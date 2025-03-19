@@ -115,7 +115,7 @@ export default function SearchScreen(): JSX.Element {
   const fromDashboard = params.fromDashboard === "true";
   const showAllDoctors = params.showAllDoctors === "true";
   
-  const [userRole, setUserRole] = useState<string>("patient"); // Default role
+  const [userRole, setUserRole] = useState<string>();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -488,7 +488,7 @@ export default function SearchScreen(): JSX.Element {
           if (response.data.success && Array.isArray(response.data.data)) {
             console.log("Medical records fetched successfully:", response.data.data.length);
             // Validate each record before setting to state
-            const validatedRecords = response.data.data.map(record => ({
+            const validatedRecords = response.data.data.map((record: any) => ({
               _id: record._id || `temp-${Math.random()}`,
               patientId: record.patientId || selectedPatientId,
               patientName: record.patientName || selectedPatientName,
@@ -771,67 +771,68 @@ export default function SearchScreen(): JSX.Element {
               patients && patients.length > 0 ? (
                 patients.map((patient) => (
                   <PatientCard
-                    key={patient._id || `temp-${Math.random()}`}
-                    _id={patient._id || `temp-${Math.random()}`}
-                    name={patient.name || "Unknown Patient"}
-                    age={patient.age || 0}
-                    gender={patient.gender || "Unknown"}
-                    medicalHistory={patient.medicalHistory || []}
-                    allergies={patient.allergies || []}
-                    medications={patient.medications || []}
-                    lastVisit={patient.lastVisit}
-                    upcomingAppointment={patient.upcomingAppointment}
-                    bloodType={patient.bloodType}
-                    vitals={patient.vitals}
-                    onPress={handleViewPatient}
-                    profileImage={patient.profileImage}
-                  />
-                ))
-              ) : (
-                <View className="flex-1 justify-center items-center py-10">
-                  <Text className="text-gray-500">No patients found</Text>
-                  <Text className="text-gray-400 text-xs mt-2">
-                    Please check your API connection or try again later.
-                  </Text>
-                  <TouchableOpacity
-                    className="mt-4 bg-orange-500 px-4 py-2 rounded-lg"
-                    onPress={fetchPatients}
-                  >
-                    <Text className="text-white font-medium">Refresh</Text>
-                  </TouchableOpacity>
-                </View>
-              )
-            ) : 
-            doctors && doctors.length > 0 ? (
-              doctors.map((doctor) => (
-                <DoctorCard
-                  key={doctor._id || `temp-${Math.random()}`}
-                  name={doctor.name || "Unknown Doctor"}
-                  specialty={doctor.specialty || "General Practice"}
-                  rating={doctor.rating || 0}
-                  date={doctor.availableSlots?.[0]?.date || "No available slots"}
-                  time={doctor.availableSlots?.[0]?.slots?.[0]?.startTime || ""}
-                  onPress={() => handleBookAppointment(doctor._id)}
-                  profileImage={doctor.profileImage}
+                  key={patient._id || `temp-${Math.random()}`}
+                  _id={patient._id || `temp-${Math.random()}`}
+                  name={patient.name || "Unknown Patient"}
+                  age={patient.age || 0}
+                  gender={patient.gender || "Unknown"}
+                  medicalHistory={patient.medicalHistory || []}
+                  allergies={patient.allergies || []}
+                  medications={patient.medications || []}
+                  lastVisit={patient.lastVisit}
+                  upcomingAppointment={patient.upcomingAppointment}
+                  bloodType={patient.bloodType}
+                  vitals={patient.vitals}
+                  onPress={handleViewPatient}
+                  profileImage={patient.profileImage}
                 />
               ))
             ) : (
               <View className="flex-1 justify-center items-center py-10">
-                <Text className="text-gray-500">No doctors available</Text>
+                <Text className="text-gray-500">No patients found</Text>
                 <Text className="text-gray-400 text-xs mt-2">
                   Please check your API connection or try again later.
                 </Text>
                 <TouchableOpacity
                   className="mt-4 bg-orange-500 px-4 py-2 rounded-lg"
-                  onPress={fetchDoctors}
+                  onPress={fetchPatients}
                 >
                   <Text className="text-white font-medium">Refresh</Text>
                 </TouchableOpacity>
               </View>
-            )}
-          </ScrollView>
-        )
-      )}
-    </View>
-  );
+            )
+          ) : 
+          doctors && doctors.length > 0 ? (
+            doctors.map((doctor) => (
+              <DoctorCard
+                key={doctor._id || `temp-${Math.random()}`}
+                name={doctor.name || "Unknown Doctor"}
+                specialty={doctor.specialty || "General Practice"}
+                rating={doctor.rating || 0}
+                date={doctor.availableSlots?.[0]?.date || "No available slots"}
+                time={doctor.availableSlots?.[0]?.slots?.[0]?.startTime || ""}
+                onPress={() => handleBookAppointment(doctor._id)}
+                profileImage={doctor.profileImage}
+              />
+            ))
+          ) : (
+            <View className="flex-1 justify-center items-center py-10">
+              <Text className="text-gray-500">No doctors available</Text>
+              <Text className="text-gray-400 text-xs mt-2">
+                Please check your API connection or try again later.
+              </Text>
+              <TouchableOpacity
+                className="mt-4 bg-orange-500 px-4 py-2 rounded-lg"
+                onPress={fetchDoctors}
+              >
+                <Text className="text-white font-medium">Refresh</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </ScrollView>
+      )
+    )}
+  </View>
+);
 }
+

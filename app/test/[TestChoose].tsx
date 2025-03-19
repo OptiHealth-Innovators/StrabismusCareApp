@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { Ionicons } from "@expo/vector-icons";
+import { Stack, router } from "expo-router";
 
 export default function TestChoose() {
     const [modalVisible, setModalVisible] = useState(false);
@@ -64,6 +66,26 @@ export default function TestChoose() {
     };
 
     return (
+        <>
+        <Stack.Screen
+        options={{
+          headerTitle: "",
+          headerTitleAlign: "center",
+          headerStyle: {
+            backgroundColor: "white",
+          },
+          headerTintColor: "#4338ca",
+          headerShown: true,
+          headerLeft: () => (
+            <TouchableOpacity className="pl-4" onPress={() => router.back()}>
+              <View className="flex-row gap-1">
+                <Ionicons name="chevron-back" size={16} color="#4338ca" />
+                <Text>Back</Text>
+              </View>
+            </TouchableOpacity>
+          ),
+        }}
+      />
         <TouchableWithoutFeedback onPress={() => modalVisible && setModalVisible(false)}>
             <View className="flex-1 ">
                 {/* Main Content */}
@@ -132,6 +154,7 @@ export default function TestChoose() {
                 )}
             </View>
         </TouchableWithoutFeedback>
+        </>
     );
 }
 

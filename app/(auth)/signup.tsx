@@ -19,7 +19,10 @@ import { Picker } from "@react-native-picker/picker";
 import { FontAwesome } from "@expo/vector-icons";
 import Constants from "expo-constants";
 
-const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL_LOCAL;
+// Fix backend URL configuration
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL;
+
+console.log("Using backend URL:", ENV_BACKEND_URL);
 
 interface PasswordRequirement {
   test: RegExp;
@@ -293,7 +296,7 @@ const SignUp: React.FC = () => {
         setRoleError("");
         setContact("");
         setAddress("");
-        setSpecialty("Dentist");
+        setSpecialty("Ophthalmologist");
         setTenure("");
         setDateOfBirth("");
         setShowDoctorFields(false);
@@ -669,10 +672,6 @@ const SignUp: React.FC = () => {
                       onChangeText={setDateOfBirth}
                       editable={!loading}
                     />
-                    {/* <Image
-                      source={calendarIcon}
-                      className="absolute right-3 top-3 w-6 h-6"
-                    /> */}
                   </View>
                 </View>
 
