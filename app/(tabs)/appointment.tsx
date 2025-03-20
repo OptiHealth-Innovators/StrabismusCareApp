@@ -143,13 +143,14 @@ const Calendar = () => {
   );
 
   return (
-    <View style={{ padding: 16 }}>
+    <View style={{ padding: 16, marginTop: 20 }}>
       <Text
         style={{
           fontSize: 18,
           fontWeight: "bold",
           color: "#4A5568",
           marginBottom: 16,
+          paddingTop: 28,
         }}
       >
         {currentMonth} {currentYear}
@@ -282,6 +283,7 @@ const Appointments = () => {
             paddingVertical: 12,
             borderRadius: 8,
           }}
+          onPress={() => alert("Attending...")}
         >
           <Text
             style={{
@@ -334,6 +336,7 @@ const Appointments = () => {
               flex: 1,
               alignItems: "center",
               paddingVertical: 8,
+              marginRight: 8,
               borderRadius: 8,
               backgroundColor:
                 activeTab === tab ? "#FEEBC8" : "#E2E8F0",

@@ -1,14 +1,17 @@
+// components/DoctorCard.tsx
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 
-type DoctorCardProps = {
+interface DoctorCardProps {
   name: string;
   specialty: string;
   rating: number;
   date: string;
   time: string;
   onPress: () => void;
-};
+  profileImage?: string;
+}
 
 const DoctorCard: React.FC<DoctorCardProps> = ({
   name,
@@ -17,128 +20,61 @@ const DoctorCard: React.FC<DoctorCardProps> = ({
   date,
   time,
   onPress,
+  profileImage,
 }) => {
+  // Default profile image if none provided
+  const defaultImage = require("@/assets/images/doc.png");
+  
   return (
-    <View style={styles.cardTop}>
-      {/* Header Section */}
-      <View style={styles.headerTop}>
-        <Image
-          source={require("@/assets/images/doc.png")}
-          style={styles.profileImageTop}
-        />
-        <View style={styles.headerTextTop}>
-          <Text style={styles.nameTop}>{name}</Text>
-          <Text style={styles.specialtyTop}>{specialty}</Text>
+    <View className="bg-white rounded-lg shadow-md mr-4 mb-2 w-96">
+      {/* Previously this might have been w-64 or similar */}
+      <View className="p-4">
+        <View className="flex-row items-center mb-3">
+          <Image
+            source={profileImage ? { uri: profileImage } : defaultImage}
+            className="w-16 h-16 rounded-full"
+          />
+          <View className="ml-3">
+            <Text className="font-bold text-base text-gray-800">{name}</Text>
+            <Text className="text-gray-600">{specialty}</Text>
+            <View className="flex-row items-center mt-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <FontAwesome
+                  key={star}
+                  name={star <= Math.floor(rating) ? "star" : star <= rating + 0.5 ? "star-half-o" : "star-o"}
+                  size={14}
+                  color="#FFB800"
+                  style={{ marginRight: 2 }}
+                />
+              ))}
+              <Text className="text-gray-600 ml-1">{rating.toFixed(1)}</Text>
+            </View>
+          </View>
         </View>
-        <View style={styles.ratingContainerTop}>
-          <Text style={styles.heartIconTop}>❤️</Text>
-          <Text style={styles.ratingTop}>{rating}</Text>
+        
+        <View className="bg-gray-50 p-3 rounded-lg">
+          <Text className="text-sm text-gray-500 mb-1">Next Available</Text>
+          <View className="flex-row items-center">
+            <FontAwesome name="calendar" size={14} color="#666" />
+            <Text className="ml-2 text-gray-700">{date}</Text>
+          </View>
+          {time && (
+            <View className="flex-row items-center mt-1">
+              <FontAwesome name="clock-o" size={14} color="#666" />
+              <Text className="ml-2 text-gray-700">{time}</Text>
+            </View>
+          )}
         </View>
+        
+        <TouchableOpacity
+          className="bg-[#FF7900] py-3 rounded-lg mt-3 items-center"
+          onPress={onPress}
+        >
+          <Text className="text-white font-medium">Book Appointment</Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Appointment Details */}
-                    <View style={styles.appointmentDetailsTop}>
-                      <View style={styles.rowTop}>
-                        <Text style={styles.iconTop}>🕒</Text>
-                        <Text style={styles.dateTop}>Monday</Text>
-                        <Text style={styles.dateTop}>Oct 27, 2022</Text>
-                        <Text style={styles.timeTop}>9:00 - 9:30 am</Text>
-                      </View>
-                    </View>
-
-      {/* Book Appointment Button */}
-      <TouchableOpacity style={styles.buttonTop} onPress={onPress}>
-        <Text style={styles.buttonTextTop}>Book Appointment</Text>
-      </TouchableOpacity>
     </View>
   );
 };
 
 export default DoctorCard;
-
-const styles = StyleSheet.create({
-  cardTop: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    padding: 16,
-    margin: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
-    elevation: 3,
-  },
-  headerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  profileImageTop: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    marginRight: 12,
-  },
-  headerTextTop: {
-    flex: 1,
-  },
-  nameTop: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  specialtyTop: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 2,
-  },
-  ratingContainerTop: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  heartIconTop: {
-    fontSize: 16,
-    color: "red",
-    marginRight: 4,
-  },
-  ratingTop: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  appointmentDetailsTop: {
-    backgroundColor: "#E9F4FF",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  rowTop: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  iconTop: {
-    fontSize: 16,
-    marginRight: 8,
-  },
-  dateTop: {
-    fontSize: 14,
-    color: "#333",
-    marginRight: 12,
-  },
-  timeTop: {
-    fontSize: 14,
-    color: "#333",
-    fontWeight: "bold",
-  },
-  buttonTop: {
-    backgroundColor: "#FF6C00",
-    borderRadius: 8,
-    paddingVertical: 12,
-    alignItems: "center",
-  },
-  buttonTextTop: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
-});

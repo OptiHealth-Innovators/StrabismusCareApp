@@ -1,69 +1,102 @@
+import { Link } from "expo-router";
 import React from "react";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Image, Alert } from "react-native";
 
 interface TestCardProps {
   title: string;
   icon: React.ReactNode;
+  testId: string;
 }
 
-const TestCard: React.FC<TestCardProps> = ({ title, icon }) => {
+const TestCard: React.FC<TestCardProps> = ({ title, icon, testId }) => {
   const handlePress = () => {
-    Alert.alert("Stay tuned", "This test will be added in future update");
+    if (testId !== "strabismus") {
+      Alert.alert("Coming Soon", "This test will be added in the future update");
+    }
   };
 
+  // Only Strabismus test should use Link component
+  if (testId === "strabismus") {
+    return (
+      <Link href={`/test/${testId}`} asChild>
+        <TouchableOpacity
+          className="flex flex-row items-center bg-[#FFE4C7] rounded-xl py-2.5 px-2.5 mb-2 w-[48%]"
+        >
+          <View className="mr-2">{icon}</View>
+          <Text className="text-[#FF7900] font-bold text-sm">{title}</Text>
+        </TouchableOpacity>
+      </Link>
+    );
+  }
+
+  // Other tests should just show an alert
   return (
     <TouchableOpacity
+      className="flex flex-row items-center bg-[#FFE4C7] rounded-xl py-2.5 px-2.5 mb-2 w-[48%]"
       onPress={handlePress}
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#FFE4C7",
-        borderRadius: 12,
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        marginBottom: 8,
-        width: "48%",
-      }}
     >
-      <View style={{ marginRight: 8 }}>{icon}</View>
-      <Text style={{ color: "#FF7900", fontWeight: "bold", fontSize: 14 }}>
-        {title}
-      </Text>
+      <View className="mr-2">{icon}</View>
+      <Text className="text-[#FF7900] font-bold text-sm">{title}</Text>
     </TouchableOpacity>
   );
 };
 
-const TestsComponent = () => {
+const Tests = () => {
   return (
-    <View style={{ padding: 16 }}>
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: 16,
-        }}
-      >
-        <Text style={{ fontSize: 18, fontWeight: "bold", color: "#222" }}>
-          Tests
-        </Text>
-        <Text style={{ fontSize: 14, color: "#FF7900" }}>See All</Text>
+    <View className="p-4">
+      <View className="flex flex-row justify-between items-center mb-4">
+        <Text className="text-lg font-bold text-[#222]">Tests</Text>
+        <Link href="/test/" asChild> 
+          {/* <TouchableOpacity>
+            <Text className="text-sm text-[#FF7900]">See All</Text>
+          </TouchableOpacity> */}
+        </Link>
       </View>
 
-      <View
-        style={{
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "space-between",
-        }}
-      >
-        <TestCard title="Strabismus" icon={<Text>👁️</Text>} />
-        <TestCard title="Color Blindness" icon={<Text>🎨</Text>} />
-        <TestCard title="Vision" icon={<Text>📋</Text>} />
-        <TestCard title="60 Amblyopia" icon={<Text>👁️</Text>} />
+      <View className="flex flex-row flex-wrap justify-between">
+        <TestCard
+          title="Strabismus"
+          icon={
+            <Image
+              source={require("@/assets/images/strabismus-icon.png")}
+              className="w-5 h-5 mr-2"
+            />
+          }
+          testId="strabismus"
+        />
+        <TestCard
+          title="Color Blindness"
+          icon={
+            <Image
+              source={require("@/assets/images/color-blind-icon.png")}
+              className="w-5 h-5 mr-2"
+            />
+          }
+          testId="color-blindness"
+        />
+        <TestCard
+          title="Vision"
+          icon={
+            <Image
+              source={require("@/assets/images/vision-icon.png")}
+              className="w-5 h-5 mr-2"
+            />
+          }
+          testId="vision"
+        />
+        <TestCard
+          title="Amblyopia"
+          icon={
+            <Image
+              source={require("@/assets/images/amblyopia-icon.png")}
+              className="w-5 h-5 mr-2"
+            />
+          }
+          testId="amblyopia"
+        />
       </View>
     </View>
   );
 };
 
-export default TestsComponent;
+export default Tests;

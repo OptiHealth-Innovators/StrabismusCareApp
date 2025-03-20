@@ -7,24 +7,28 @@ import Feather from "react-native-vector-icons/Feather";
 export default function TabLayout() {
   return (
     <Tabs
-      screenOptions={{
+      screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: "absolute",
-          },
-          default: {
-            backgroundColor: "#2E004F",
-            height: 55,
-          },
-        }),
-        tabBarLabelStyle: {
-          color: "#FFFFFF", // Default label color
+        tabBarStyle: {
+          backgroundColor: "#2E004F",
+          height: 55,
+          position: "absolute",
+          borderTopWidth: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          elevation: 0,
         },
-        tabBarActiveTintColor: "#FF7900", // Color for the selected tab icon and label
-        tabBarInactiveTintColor: "#FFFFFF", // Color for unselected tab icons and labels
-      }}
+        tabBarLabelStyle: {
+          color: "#FFFFFF",
+        },
+        tabBarActiveTintColor: "#FF7900",
+        tabBarInactiveTintColor: "#FFFFFF",
+        tabBarItemStyle: Platform.select({
+          ios: {},
+          default: {}
+        }),
+      })}
     >
       {/* Dashboard Tab */}
       <Tabs.Screen
@@ -77,63 +81,8 @@ export default function TabLayout() {
           ),
         }}
       />
+      
+      {/* The problematic tab is removed */}
     </Tabs>
   );
 }
-
-
-
-// import { Stack, useRouter, useSegments } from 'expo-router';
-// import { useEffect, useState } from 'react';
-// import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
-// import { View, ActivityIndicator } from 'react-native';
-
-// export default function RootLayout() {
-// 	const [initializing, setInitializing] = useState(true);
-// 	const [user, setUser] = useState<FirebaseAuthTypes.User | null>();
-// 	const router = useRouter();
-// 	const segments = useSegments();
-
-// 	const onAuthStateChanged = (user: FirebaseAuthTypes.User | null) => {
-// 		console.log('onAuthStateChanged', user);
-// 		setUser(user);
-// 		if (initializing) setInitializing(false);
-// 	};
-
-// 	useEffect(() => {
-// 		const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-// 		return subscriber;
-// 	}, []);
-
-// 	useEffect(() => {
-// 		if (initializing) return;
-
-// 		const inAuthGroup = segments[0] === '(auth)';
-
-// 		if (user && !inAuthGroup) {
-// 			router.replace('/(auth)/home');
-// 		} else if (!user && inAuthGroup) {
-// 			router.replace('/');
-// 		}
-// 	}, [user, initializing]);
-
-// 	if (initializing)
-// 		return (
-// 			<View
-// 				style={{
-// 					alignItems: 'center',
-// 					justifyContent: 'center',
-// 					flex: 1
-// 				}}
-// 			>
-// 				<ActivityIndicator size="large" />
-// 			</View>
-// 		);
-
-// 	return (
-// 		<Stack>
-// 			<Stack.Screen name="index" options={{ title: 'Login' }} />
-// 			<Stack.Screen name="(auth)" options={{ headerShown: false }} />
-// 		</Stack>
-// 	);
-// }
