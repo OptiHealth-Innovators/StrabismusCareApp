@@ -33,8 +33,9 @@
 // </TouchableOpacity>
 // </View>
 
-// if (email && password) {
-//   try {
+// if (email && password)`ImagePicker.MediaTypeOptions` have been deprecated. Use `ImagePicker.MediaType` or an array of `ImagePicker.MediaType` instead.
+› Reloading apps
+Android Bundled 47ms node_modules/expo-router/entry.js (1 module)
 //     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 //     const user = userCredential.user;
 //     if (user) {
@@ -46,7 +47,8 @@
 //     const errorMessage = m.replace(/^Firebase: /, '').replace(/ \(.+\)\.$/, '').trim();
 //     console.log(errorMessage);
 //     Toast.show({
-//       type: 'error',
+//       type: 'error', {
+//   try {
 //       text1: errorMessage,
 //     });
 //   }
