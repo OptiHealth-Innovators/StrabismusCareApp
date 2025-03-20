@@ -7,43 +7,104 @@ import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator } fr
 import { Link, useRouter } from "expo-router";
 import { doctorService } from "@/services/api/doctorService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from "expo-constants";
+
+// Define types for user and doctor
+interface User {
+  id: string; // Changed from _id to id to match backend response
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  role: string;
+  email: string;
+  createdAt?: string;
+}
+
+interface Doctor {
+  _id: string;
+  name: string;
+  specialty: string;
+  rating: number;
+  profileImage?: string;
+  availableSlots?: Array<{
+    date: string;
+    slots: Array<{
+      startTime: string;
+      endTime: string;
+    }>;
+  }>;
+}
+
+// Updated to match backend response format
+interface UserResponse {
+  success: boolean;
+  message: string;
+  user: User;
+}
+
+// Add this interface for the doctor service response
+interface DoctorServiceResponse {
+  data?: {
+    doctors?: Doctor[];
+    [key: string]: any;
+  } | Doctor[];
+  // Allow direct array response without data wrapper
+  [key: string]: any;
+}
+
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL_LOCAL;
+
+console.log("ENV_BACKEND_URL:", ENV_BACKEND_URL);
 
 const Dashboard: React.FC = () => {
   const router = useRouter();
-  const [userRole, setUserRole] = useState<string>("patient"); // Default to patient
-  const [topDoctors, setTopDoctors] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [userInfo, setUserInfo] = useState<User | null>(null);
+  const [topDoctors, setTopDoctors] = useState<Doctor[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Check user role on component mount
+  // Fetch user info on component mount
   useEffect(() => {
-    checkUserRole();
+    const fetchUserInfo = async () => {
+      try {
+        const userId = await AsyncStorage.getItem("user");
+        console.log("User ID from AsyncStorage:", userId);
+        if (!userId) {
+          throw new Error("User ID not found in AsyncStorage");
+        }
+
+        const response = await fetch(`${ENV_BACKEND_URL}/user/${userId}`);
+        console.log("Response status:", response.status);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch user info: ${response}`);
+        }
+        
+        const data = await response.json() as UserResponse;
+        console.log("Response data:", data);
+        
+        if (data.success && data.user) {
+          setUserInfo(data.user);
+        } else {
+          throw new Error("Invalid response format or user data not found");
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error instanceof Error ? error.message : String(error));
+      }
+    };
+
+    fetchUserInfo();
   }, []);
 
   // Fetch top doctors if user is a patient
   useEffect(() => {
-    if (userRole === "patient") {
+    if (userInfo && userInfo.role === "patient") {
       fetchTopDoctors();
     }
-  }, [userRole]);
-
-  const checkUserRole = async () => {
-    try {
-      const userDataString = await AsyncStorage.getItem("userData");
-      if (userDataString) {
-        const userData = JSON.parse(userDataString);
-        if (userData && userData.role) {
-          setUserRole(userData.role);
-          console.log("User role set to:", userData.role);
-        }
-      }
-    } catch (error) {
-      console.error("Error retrieving user role:", error);
-    }
-  };
+  }, [userInfo]);
 
   // Function to fetch with retry logic
-  const fetchWithRetry = async (fetchFunction, maxRetries = 3) => {
+  const fetchWithRetry = async <T,>(fetchFunction: () => Promise<T>, maxRetries = 3): Promise<T> => {
     let retries = 0;
     
     while (retries < maxRetries) {
@@ -67,43 +128,43 @@ const Dashboard: React.FC = () => {
       setLoading(true);
       console.log("Fetching top doctors...");
       
-      // Check if doctorService exists and has getAllDoctors method
-      if (doctorService && typeof doctorService.getAllDoctors === 'function') {
-        const response = await fetchWithRetry(() => doctorService.getAllDoctors());
-        
-        if (response && response.data) {
-          let doctors = [];
-          
-          if (Array.isArray(response.data)) {
-            doctors = response.data;
-          } else if (typeof response.data === 'object') {
-            // Some APIs nest the array in a property
-            const possibleArrays = Object.values(response.data).filter(val => Array.isArray(val));
-            if (possibleArrays.length > 0) {
-              doctors = possibleArrays[0];
-            } else {
-              console.warn("Response data is an object but contains no arrays");
-            }
-          } else {
-            console.warn("Unexpected response data format:", typeof response.data);
-          }
-          
-          // Sort by rating (highest first) and take the top N
-          const topN = doctors
-            .sort((a, b) => b.rating - a.rating)
-            .slice(0, 5); // Show top 5 doctors
-            
-          setTopDoctors(topN);
-          console.log("Top doctors set, count:", topN.length);
-        } else {
-          console.warn("No response data received");
-        }
-      } else {
-        console.error("Doctor service is not properly initialized");
-        setError("Service initialization error. Please restart the app.");
+      if (!doctorService || typeof doctorService.getAllDoctors !== 'function') {
+        throw new Error("Doctor service is not properly initialized");
       }
       
+      const response = await fetchWithRetry<any>(() => doctorService.getAllDoctors());
+      console.log("Doctor API response:", response);
+      
+      // Determine where the doctor array is in the response
+      let doctorsArray: Doctor[] = [];
+      
+      if (Array.isArray(response)) {
+        // Direct array response
+        doctorsArray = response;
+      } else if (response?.data) {
+        // Response has a data property
+        if (Array.isArray(response.data)) {
+          doctorsArray = response.data;
+        } else if (response.data.doctors && Array.isArray(response.data.doctors)) {
+          doctorsArray = response.data.doctors;
+        }
+      } else if (response?.doctors && Array.isArray(response.doctors)) {
+        doctorsArray = response.doctors;
+      }
+      
+      if (doctorsArray.length === 0) {
+        console.warn("No doctors found in the response");
+      }
+      
+      // Sort by rating and take top 5
+      const topN = doctorsArray
+        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        .slice(0, 5);
+        
+      setTopDoctors(topN);
+      console.log("Top doctors set, count:", topN.length);
       setError(null);
+      
     } catch (err) {
       console.error("Failed to fetch top doctors:", err);
       setError("Failed to fetch doctors. Please try again.");
@@ -111,20 +172,31 @@ const Dashboard: React.FC = () => {
       setLoading(false);
     }
   };
-
-  const handleBookAppointment = (doctorId) => {
+  
+  const handleBookAppointment = (doctorId: string) => {
     alert(`Appointment Booked with doctor ID: ${doctorId || 'unknown'}`);
   };
 
-  // New function to navigate to the search screen
+  // Navigate to the search screen
   const navigateToAllDoctors = () => {
     router.push({
-      pathname: "/(tabs)/search",
+      pathname: "/(tabs)/search" as any,
       params: { 
-        showAllDoctors: true,
-        fromDashboard: true
+        showAllDoctors: "true",
+        fromDashboard: "true"
       }
     });
+  };
+
+  // Get user name from userInfo
+  const getUserName = (): string => {
+    if (!userInfo) return "User";
+    
+    if (userInfo.name) return userInfo.name;
+    if (userInfo.firstName && userInfo.lastName) return `${userInfo.firstName} ${userInfo.lastName}`;
+    if (userInfo.firstName) return userInfo.firstName;
+    
+    return "User";
   };
 
   return (
@@ -141,7 +213,7 @@ const Dashboard: React.FC = () => {
                 Hi, Welcome Back!
               </Text>
               <Text className="text-white text-lg font-bold">
-                John Doe William
+                {getUserName()}
               </Text>
             </View>
             <Image
@@ -176,7 +248,7 @@ const Dashboard: React.FC = () => {
           </View>
 
           {/* Top Doctors Section - Only show for patients */}
-          {userRole === "patient" && (
+          {userInfo && userInfo.role === "patient" && (
             <>
               <View className="flex-row justify-between items-center mb-4 mt-2">
                 <Text className="text-lg font-bold text-[#333333]">
@@ -188,7 +260,7 @@ const Dashboard: React.FC = () => {
               </View>
               
               {loading ? (
-                <View className="h-20 justify-center items-center">
+                <View className="h-20 w-full justify-center items-center">
                   <ActivityIndicator size="small" color="#FF7900" />
                 </View>
               ) : error ? (
@@ -221,25 +293,9 @@ const Dashboard: React.FC = () => {
                       />
                     ))
                   ) : (
-                    // Fallback to static data if no doctors are available from API
-                    <>
-                      <DoctorCard
-                        name="Dr. John Tauhid"
-                        specialty="Cardiologist"
-                        rating={4.8}
-                        date="16th Jan 2025"
-                        time="10:30 AM"
-                        onPress={() => handleBookAppointment("fallback1")}
-                      />
-                      <DoctorCard
-                        name="Dr. John Doe"
-                        specialty="Cardiologist"
-                        rating={4.8}
-                        date="16th Jan 2025"
-                        time="10:30 AM"
-                        onPress={() => handleBookAppointment("fallback2")}
-                      />
-                    </>
+                    <View className="h-20 justify-center items-center w-full">
+                      <Text className="text-gray-500">No doctors available at the moment</Text>
+                    </View>
                   )}
                 </ScrollView>
               )}
