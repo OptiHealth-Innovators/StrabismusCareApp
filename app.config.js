@@ -10,55 +10,54 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     ios: {
-      supportsTablet: true
+      supportsTablet: true,
     },
     android: {
       adaptiveIcon: {
         foregroundImage: "./assets/images/icon.png",
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
       },
-      package: "com.aziz.StrabismusCare"
+      package: "com.aziz.StrabismusCare",
     },
     web: {
       bundler: "metro",
       output: "static",
-      favicon: "./assets/images/favicon.png"
+      favicon: "./assets/images/favicon.png",
     },
     plugins: [
       "expo-router",
       [
         "expo-build-properties",
         {
-          "ios": {
-            "useFrameworks": "static"
-          }
-        }
+          ios: {
+            useFrameworks: "static",
+          },
+        },
       ],
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/icon.png",
-          "imageWidth": 600,
-          "resizeMode": "contain"
-        }
-      ]
+          image: "./assets/images/icon.png",
+          imageWidth: 600,
+          resizeMode: "contain",
+        },
+      ],
     ],
-    assetBundlePatterns: [
-      "**/*"
-    ],
+    assetBundlePatterns: ["**/*"],
     experiments: {
-      typedRoutes: true
+      typedRoutes: true,
     },
     extra: {
       router: {
-        origin: false
+        origin: false,
       },
       eas: {
-        projectId: "93482b66-8399-4824-be0c-8f4f0a203275"
+        projectId: "93482b66-8399-4824-be0c-8f4f0a203275",
       },
       // Fix the variable names to match what you're using in your code
       ENV_BACKEND_URL: process.env.ENV_BACKEND_URL,
-      ENV_BACKEND_URL_LOCAL: process.env.ENV_BACKEND_URL_LOCAL
-    }
-  }
+      ENV_BACKEND_URL_LOCAL: process.env.ENV_BACKEND_URL_LOCAL,
+      ENV_MODEL_URL: process.env.ENV_MODEL_URL,
+    },
+  },
 };
