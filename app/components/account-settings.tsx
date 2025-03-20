@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { Ionicons } from "@expo/vector-icons";
 
-const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL_LOCAL;
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL;
 
 interface UserInfo {
   name: string;
