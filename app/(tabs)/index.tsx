@@ -52,7 +52,7 @@ interface DoctorServiceResponse {
   [key: string]: any;
 }
 
-const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL_LOCAL;
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL;
 
 console.log("ENV_BACKEND_URL:", ENV_BACKEND_URL);
 

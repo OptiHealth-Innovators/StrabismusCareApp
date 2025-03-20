@@ -31,7 +31,7 @@ interface UpdatePasswordResponse {
   message?: string;
 }
 
-const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL_LOCAL;
+const ENV_BACKEND_URL = Constants.expoConfig?.extra?.ENV_BACKEND_URL;
 
 const ChangePassword: React.FC = () => {
   const [email, setEmail] = useState<string>("");
