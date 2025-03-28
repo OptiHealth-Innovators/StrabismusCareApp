@@ -19,7 +19,7 @@
 
 ## 📋 Overview
 
-StrabismusCare is an innovative AI-powered mobile application designed to revolutionize the screening and management of strabismus, a common eye condition affecting millions worldwide. By leveraging cutting-edge artificial intelligence, we provide accessible, efficient, and accurate diagnostic solutions that empower users to take control of their eye health while facilitating better communication with healthcare providers.
+StrabismusCare is an innovative AI-powered mobile application designed to revolutionize the screening and management of strabismus, a common eye condition affecting millions worldwide. By leveraging cutting-edge artificial intelligence, we provide accessible, efficient, and accurate diagnostic solutions that empower users to take care of their eye health while facilitating better communication with healthcare providers and most importantly user can follow-up their eye condition in a timely manner.
 
 ## ✨ Key Features
 
